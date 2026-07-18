@@ -3,7 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "dev": "serve . --listen 3000 --no-clipboard"
+  },
   "dependencies": {
     "@vercel/functions": "^1.5.0"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
   }
+}
 }
