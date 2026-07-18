@@ -848,11 +848,20 @@
       tickInterval = setInterval(tick, 1000);
     },
 
-    startPolling(txId, onPaid) {
+    startPolling(txId, onPaid, overrides) {
       const pill = document.getElementById('status-pill');
       pollAttempts = 0;
       // Salva estado pra retomada após visibilitychange + Purchase do Meta com valor correto
-      pollingState = { txId, onPaid, valueCents: undefined, items: undefined, contentCategory: undefined };
+      // overrides: { valueCents, items, contentCategory } vindos do init (upsell1-pay/upsell2-pay
+      // precisam mandar valor real do upsell, não o do pacote principal que tá no localStorage).
+      const ov = overrides || {};
+      pollingState = {
+        txId,
+        onPaid,
+        valueCents: typeof ov.valueCents === 'number' ? ov.valueCents : undefined,
+        items: Array.isArray(ov.items) ? ov.items : undefined,
+        contentCategory: typeof ov.contentCategory === 'string' ? ov.contentCategory : undefined,
+      };
       pollTimer = setInterval(async () => {
         pollAttempts++;
         if (pollAttempts > POLL_MAX_ATTEMPTS) {
@@ -937,14 +946,10 @@
       this.bindCopyButton();
       this.bindQrToggle();
       this.startCountdown(expFromUrl);
-      this.startPolling(txId, onPaid);
+      // Passa overrides direto pro polling pra evitar janela onde valueCents/items ficariam undefined
+      // e o Purchase do Meta cairia no fallback (localStorage.selectedItems, que pode ser o pacote base).
+      this.startPolling(txId, onPaid, { valueCents, items, contentCategory });
       this.bindRefreshButton(txId, onPaid);
-      // Aplica overrides no estado do polling
-      if (pollingState) {
-        pollingState.valueCents = valueCents;
-        pollingState.items = items;
-        pollingState.contentCategory = contentCategory;
-      }
 
       // Se houver onPaid, vincular o botão "Continuar" do success overlay
       if (onPaid) {
@@ -977,10 +982,14 @@
       stopPolling();
       visibilityPaused = true;
     } else if (visibilityPaused && !document.hidden) {
-      // retoma chamando startPolling de novo — precisamos do txId, então
-      // guardamos no escopo do init via pollingState
+      // retoma chamando startPolling de novo — passa os mesmos overrides (valueCents/items)
+      // que estavam no estado, senão ao retomar de background o Purchase da Meta cai no fallback errado.
       if (pollingState && pollingState.txId) {
-        startPolling(pollingState.txId, pollingState.onPaid);
+        startPolling(pollingState.txId, pollingState.onPaid, {
+          valueCents: pollingState.valueCents,
+          items: pollingState.items,
+          contentCategory: pollingState.contentCategory,
+        });
       }
       visibilityPaused = false;
     }

@@ -247,6 +247,20 @@
     const oldEl = document.getElementById('price-old');
     if (oldEl) oldEl.textContent = fmt(totalCents);
 
+    // Atualiza dataCtx com o novo valor do upsell (stage 2) e re-dispara ViewContent
+    // com value correto, senão o pixel do Facebook vê ViewContent=R$ stage1 + Purchase=R$ stage2.
+    if (dataCtx) dataCtx.offerCents = newOffer;
+    try {
+      if (typeof fbq === 'function') {
+        fbq('track', 'ViewContent', {
+          content_category: 'upsell_diamantes',
+          content_ids: ['upsell1'],
+          value: newOffer / 100,
+          currency: 'BRL',
+        });
+      }
+    } catch {}
+
     const acceptBtn = document.getElementById('btn-accept-upsell1');
     if (acceptBtn) {
       acceptBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> QUERO APROVEITAR — 70% OFF AGORA';
@@ -307,7 +321,11 @@
         try {
           acceptBtn.disabled = true;
           acceptBtn.innerHTML = '<span class="dot skeleton" style="width:14px;height:14px;border-radius:50%;display:inline-block;background:#fff;"></span> Gerando PIX...';
-          const tx = await createUpsellPix({ offerCents: dataCtx.offerCents, label: 'Dobro Diamantes — 50% OFF' });
+          // Atualiza dataCtx pra rastrear o valor real que vai pro PIX (não o do stage 1 se já upgradeou).
+          if (stage === 2) {
+            dataCtx.offerCents = Math.round(dataCtx.totalCents * STAGE2_MULT);
+          }
+          const tx = await createUpsellPix({ offerCents: dataCtx.offerCents, label: stage === 2 ? 'Dobro Diamantes — 70% OFF' : 'Dobro Diamantes — 50% OFF' });
           if (!tx || !tx.transactionId) {
             throw new Error('pix_sem_transactionId');
           }

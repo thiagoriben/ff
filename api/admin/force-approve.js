@@ -63,19 +63,39 @@ export default async function handler(req, res) {
     // Pega dados do storage (se houver) ou monta payload mínimo
     const existing = await getSale(txId);
 
-    // Se não tem no storage, monta payload mínimo com os dados do admin request
+    // Se não tem no storage, monta payload mínimo com os dados do admin request.
+    // Aceita customerUtm (objeto) e customerItems (array) pra reconstruir venda completa
+    // — crítico pra EMQ no CAPI quando o recovery é por cold start.
+    const reconstructedItems = Array.isArray(body.customerItems) && body.customerItems.length > 0
+      ? body.customerItems.map((it) => ({
+          id: typeof it.id === 'number' ? it.id : 1,
+          title: it.title || it.name || 'Pedido Free Fire',
+          name: it.title || it.name || 'Pedido Free Fire',
+          price: Number(it.price) || 0,
+          qty: Number(it.qty) || 1,
+          total: (Number(it.price) || 0) * (Number(it.qty) || 1),
+        }))
+      : [{
+          id: 1,
+          title: 'Pedido Free Fire (recuperado)',
+          name: 'Pedido Free Fire (recuperado)',
+          price: Number(body.totalCents || 0),
+          qty: 1,
+          total: Number(body.totalCents || 0),
+        }];
+
     const sale = existing || {
       transactionId: txId,
       email: body.customerEmail || `admin-recovered-${txId.slice(0, 8)}@example.com`,
       name: body.customerName || `Venda recuperada ${txId.slice(0, 8)}`,
       phone: body.customerPhone || '',
       document: body.customerDocument || '',
-      items: [{ id: 1, title: 'Pedido Free Fire (recuperado)', name: 'Pedido Free Fire (recuperado)', price: 0, qty: 1, total: 0 }],
+      items: reconstructedItems,
       totalCents: body.totalCents || 0,
       amount_cents: body.totalCents || 0,
-      utm: {},
-      user_ip: '',
-      user_agent: 'admin-force-approve',
+      utm: (body.customerUtm && typeof body.customerUtm === 'object') ? body.customerUtm : {},
+      user_ip: body.customerUserIp || '',
+      user_agent: body.customerUserAgent || 'admin-force-approve',
     };
 
     // Marca como PAID no storage

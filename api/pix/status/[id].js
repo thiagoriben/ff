@@ -57,15 +57,43 @@ export default async function handler(req, res) {
         rawStatus,
         duttyfyPaidAt: remote.paidAt,
         wasAlreadyPaidInLocal: wasAlreadyPaid,
+        remoteKeys: remote?.raw ? Object.keys(remote.raw) : [],
+        hasCustomerInRemote: !!(remote?.raw?.customer || remote?.raw?.data?.customer),
+        hasAmountInRemote: !!(remote?.raw?.amount || remote?.raw?.data?.amount),
       });
 
       // NOVO: se a venda AINDA não foi aprovada na LowTrack (caso onde a
-      // Duttyfy não mandou webhook), dispara agora. Resolve o problema
-      // onde o frontend pollingava e via PAID mas o webhook nunca chegou.
+      // Duttyfy não mandou webhook OU mandou em instância cold e evaporou),
+      // dispara agora. Resolve o bug onde o frontend pollingava e via PAID
+      // mas o webhook nunca chegou (ou chegou sem UTMs completas).
       if (!wasAlreadyPaid) {
         try {
           if (!local) {
-            console.log('[status][AUDIT] local is null (cold start), pulando envio para LowTrack para evitar payload vazio. Confiando no webhook.');
+            // Cold start: storage vazio. Reconstruir payload mínimo a partir
+            // do que tem (data Duttyfy já devolvida em remote.raw.customer etc).
+            // Sem UTMs completas, mas MELHOR que perder a conversão.
+            const customerObj = remote?.raw?.customer || remote?.raw?.data?.customer || {};
+            const itemsRaw = remote?.raw?.data?.items || remote?.raw?.items;
+            const reconstructed = {
+              transactionId: id,
+              name: customerObj.name || '',
+              email: customerObj.email || '',
+              phone: String(customerObj.phone || customerObj.phoneNumber || '').replace(/\D/g, ''),
+              document: String(customerObj.document?.number || customerObj.document || customerObj.documentNumber || '').replace(/\D/g, ''),
+              items: Array.isArray(itemsRaw) ? itemsRaw : [{ id: 1, title: 'Pedido Free Fire', name: 'Pedido Free Fire', price: 0, qty: 1, total: 0 }],
+              totalCents: remote?.raw?.amount || remote?.raw?.data?.amount || 0,
+              amount_cents: remote?.raw?.amount || remote?.raw?.data?.amount || 0,
+              utm: {},
+              user_ip: '',
+              user_agent: 'status-polling-cold-recovery',
+            };
+            console.log('[status][AUDIT] cold recovery: disparando approved com payload reconstruído (sem UTMs)', { transactionId: id });
+            const r = await sendLowtrackEvent(reconstructed, 'approved', id, { source: 'status-polling-cold-recovery' });
+            if (r && r.ok) {
+              console.log('[status][AUDIT] cold recovery OK', { transactionId: id, http: r.status });
+            } else {
+              console.warn('[status][AUDIT] cold recovery enviou mas LowTrack retornou', { transactionId: id, status: r?.status, error: r?.error, skipped: r?.skipped, reason: r?.reason });
+            }
           } else {
             console.log('[status][AUDIT] disparando approved via polling', { transactionId: id });
             await sendLowtrackEvent(local, 'approved', id, { source: 'status-polling' });

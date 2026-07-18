@@ -147,7 +147,14 @@ export async function sendLowtrackEvent(sale, status, transactionId, context = {
 
   const payload = {
     event,
-    event_id: `${transactionId}_${status}`,
+    // event_id custom (se fornecido via context.eventIdSuffix) ou derivado.
+    // Usar sufixo único força LowTrack a tratar como NOVO evento (não deduplica).
+    // eventIdOverride (string completa) tem prioridade sobre suffix; útil pra
+    // bypass total de dedup (ex: quando precisa update de tracking).
+    event_id: context.eventIdOverride
+      || (context.eventIdSuffix
+        ? `${transactionId}_${status}_${context.eventIdSuffix}`
+        : `${transactionId}_${status}`),
     transaction_id: String(transactionId),
     amount: amountBRL,
     currency: 'BRL',
