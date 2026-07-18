@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Vercel
+.vercel/
+
+# Env vars
+.env
+.env.*
+!.env.example
+
+# Lockfiles (mantém package-lock pra reprodutibilidade, ignora os logs do run)
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs locais
+*.log
+*.pid
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Claude local
+.claude/
+
+# Scripts utilitários de teste/debug one-off
+scripts/_*.mjs
+scripts/_*.ps1
+
+# Smoke tests (output local)
+scripts/smoke-test-*
+
+# Dados locais (clientes, vendas, debug)
+vendas-pendentes.txt
+*.xlsx.tmp
+
+# Xlsx temporários de auditoria
+*.xlsx.tmp
+scripts/minimal-test.json

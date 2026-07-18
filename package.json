@@ -1,0 +1,9 @@
+{
+  "name": "saveweb2zip-com-9anosff-online",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@vercel/functions": "^1.5.0"
+  }
+}

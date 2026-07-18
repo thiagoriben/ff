@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<!-- Microsoft Clarity -->
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "xnapb8mtfe");
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Obrigado — Free Fire 9 Anos</title>
+<meta name="description" content="Compra confirmada. Seus diamantes chegarão em até 24 horas.">
+<link rel="icon" href="../images/favicon.ico" sizes="32x32">
+<link href="../css/all.min.css" rel="stylesheet">
+<link href="../css/bootstrap.min.css" rel="stylesheet">
+<link href="checkout.css" rel="stylesheet">
+
+<!-- LowTrack Pixel -->
+<script>
+  window.pixelId = "lt_px_a12f52fa71fd";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://lowtrack.com.br/pixel.js");
+  document.head.appendChild(a);
+</script>
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1579489380453079');
+fbq('track', 'PageView');
+fbq('track', 'Purchase', { currency: 'BRL' });
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
+<script src="../../js/pixel-bootstrap.js" defer></script>
+<script src="../../js/utm-flow.js"></script>
+<script src="utm-shared.js"></script>
+</head>
+<body>
+<header class="pay-header">
+  <div class="brand">
+    <img src="../images/logo_mobile.svg" alt="Garena">
+    <span>Free Fire 9 Anos</span>
+  </div>
+</header>
+
+<main class="pay-main">
+  <div class="thanks-full">
+    <div class="big-check">
+      <i class="fa-solid fa-check"></i>
+    </div>
+
+    <h1>Compra confirmada! 🎉</h1>
+    <p>
+      Em até <strong>24 horas</strong> seus diamantes serão creditados na sua conta Free Fire.
+    </p>
+
+    <div class="card summary-card" id="summary-card" style="display:none;">
+      <p class="section-title">Resumo da compra</p>
+      <div id="final-cart-list"></div>
+      <div class="cart-total">
+        <span>Total investido</span>
+        <strong id="final-cart-total">R$ 0,00</strong>
+      </div>
+    </div>
+
+    <button class="btn-primary btn-jumbo" id="btn-back-home" type="button" style="max-width:320px;">
+      <i class="fa-solid fa-house"></i> Voltar ao início
+    </button>
+
+    <p style="color:var(--muted);font-size:0.78rem;margin-top:14px;">
+      D&uacute;vidas? Entre em contato pelo e-mail <strong>suporte@9anosff.com</strong>
+    </p>
+  </div>
+</main>
+
+<script src="utm-helper.js"></script>
+<script src="customer.js"></script>
+<script src="checkout.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    function getUtmSuffix() {
+      // Helper único (utm-shared.js).
+      if (window.UtmShared && typeof window.UtmShared.getSuffix === 'function') {
+        return window.UtmShared.getSuffix();
+      }
+      try {
+        if (window.UtmFlow && typeof window.UtmFlow.getUtmSuffix === 'function') {
+          return window.UtmFlow.getUtmSuffix() || '';
+        }
+      } catch {}
+      try {
+        if (window.UtmHelper && typeof window.UtmHelper.getUtmSuffix === 'function') {
+          return window.UtmHelper.getUtmSuffix() || '';
+        }
+      } catch {}
+      return window.location.search || '';
+    }
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+      }[c]));
+    }
+    function fmt(c) {
+      return `R$ ${(c / 100).toFixed(2).replace('.', ',')}`;
+    }
+
+    const cartRaw = (() => { try { return JSON.parse(localStorage.getItem('selectedItems')); } catch { return null; } })();
+    const summaryCard = document.getElementById('summary-card');
+    const listEl = document.getElementById('final-cart-list');
+    const totalEl = document.getElementById('final-cart-total');
+    if (cartRaw && Array.isArray(cartRaw.items) && cartRaw.items.length) {
+      if (summaryCard) summaryCard.style.display = 'block';
+      if (listEl) {
+        listEl.innerHTML = cartRaw.items.map((it) => `
+          <div class="cart-item">
+            <div class="info">
+              <strong>${esc(it.name)}</strong>
+              <span>${fmt(it.price)} <span class="qty">x${it.qty || 1}</span></span>
+            </div>
+            <div class="price">${fmt(it.total || it.price)}</div>
+          </div>
+        `).join('');
+      }
+      if (totalEl) totalEl.textContent = fmt(cartRaw.total || 0);
+    }
+
+    // Botão voltar
+    const back = document.getElementById('btn-back-home');
+    if (back) {
+      back.addEventListener('click', () => {
+        const url = window.UtmShared && typeof window.UtmShared.appendToUrl === 'function'
+          ? window.UtmShared.appendToUrl('../../index.html')
+          : ('../../index.html' + (getUtmSuffix() || ''));
+        window.location.href = url;
+      });
+    }
+
+    // Limpa sessionStorage de pendingTxId pra não retornar a um PIX antigo
+    try { sessionStorage.removeItem('pendingTxId'); } catch {}
+  });
+</script>
+</body>
+</html>

