@@ -253,6 +253,8 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
         try {
           localStorage.setItem('player', JSON.stringify({ data: player, result: player }));
           sessionStorage.setItem('fb_reg_ready', String(Date.now()));
+          // Ponte pro checkout (parte1) confirmar o ID sem redigitar.
+          sessionStorage.setItem('ff:playerId', uid);
         } catch (e) {}
 
         var dest = window.UtmShared && typeof window.UtmShared.appendToUrl === 'function'

@@ -66,6 +66,21 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
 <!-- Helper único de UTMs -->
 <script src="pay/utm-shared.js"></script>
 
+<style>
+  /* Banner de recompensa do quiz (desconto + brinde) */
+  .quiz-reward-banner{margin:2px 10px 14px;padding:12px 14px;border-radius:12px;
+    background:linear-gradient(100deg,#b8860b 0%,#e0a800 45%,#16a34a 100%);
+    color:#fff;box-shadow:0 4px 16px rgba(0,0,0,.18);display:flex;align-items:center;gap:10px;font-family:inherit}
+  .quiz-reward-banner .qrb-emoji{font-size:1.7rem;line-height:1}
+  .quiz-reward-banner .qrb-text{font-size:.92rem;line-height:1.3;font-weight:600}
+  .quiz-reward-banner .qrb-text b{font-weight:800}
+  .quiz-reward-banner .qrb-text small{display:block;margin-top:2px;font-size:.76rem;opacity:.95;font-weight:500}
+  /* Selo de desconto nos cards de diamante */
+  .recarga-area .diamantes-grid .box-diamantes{position:relative;overflow:visible}
+  .diamond-discount-badge{position:absolute;top:-8px;right:-6px;background:#dc3545;color:#fff;
+    font-size:10px;font-weight:800;line-height:1;padding:3px 6px;border-radius:999px;
+    box-shadow:0 1px 4px rgba(0,0,0,.25);white-space:nowrap;z-index:2}
+</style>
 </head>
 <body data-id="68f8481ce82f9">
     <main id="content-page">
@@ -181,10 +196,16 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
                     </div>
                 </div>
                 <div class="container px-0">
+                    <div id="quiz-reward-banner" class="quiz-reward-banner" style="display:none;"></div>
                     <div class="diamantes-grid">
                         <div class="box-diamantes" data-base-id="1" data-item="Diamantes 2.180" data-amount="2.180" data-bonus="436" data-price="19.90">
                             <div class="content">
                                 <h3><img src="images/credit_icon_large.png" alt="2180 Diamantes" width="22">2.180</h3>
+                            </div>
+                        </div>
+                        <div class="box-diamantes" data-base-id="1" data-item="Diamantes 3.400" data-amount="3.400" data-bonus="680" data-price="23.90">
+                            <div class="content">
+                                <h3><img src="images/credit_icon_large.png" alt="3400 Diamantes" width="22">3.400</h3>
                             </div>
                         </div>
                         <div class="box-diamantes selecionado" data-base-id="1" data-item="Diamantes 5.600" data-amount="5.600" data-bonus="1.120" data-price="28.99">
@@ -192,9 +213,19 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
                                 <h3><img src="images/credit_icon_large.png" alt="5600 Diamantes" width="22">5.600</h3>
                             </div>
                         </div>
+                        <div class="box-diamantes" data-base-id="1" data-item="Diamantes 11.200" data-amount="11.200" data-bonus="2.240" data-price="39.90">
+                            <div class="content">
+                                <h3><img src="images/credit_icon_large.png" alt="11200 Diamantes" width="22">11.200</h3>
+                            </div>
+                        </div>
                         <div class="box-diamantes" data-base-id="1" data-item="Diamantes 22.400" data-amount="22.400" data-bonus="4.480" data-price="54.99">
                             <div class="content">
                                 <h3><img src="images/credit_icon_large.png" alt="22400 Diamantes" width="22">22.400</h3>
+                            </div>
+                        </div>
+                        <div class="box-diamantes" data-base-id="1" data-item="Diamantes 33.600" data-amount="33.600" data-bonus="6.720" data-price="74.90">
+                            <div class="content">
+                                <h3><img src="images/credit_icon_large.png" alt="33600 Diamantes" width="22">33.600</h3>
                             </div>
                         </div>
                     </div>
@@ -360,6 +391,28 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
   
     localStorage.removeItem('cart');
 
+    // ===== Recompensa do quiz (desconto + diamantes de brinde) — só persuasão =====
+    const QUIZ_BONUS = parseInt(localStorage.getItem('ffQuizBonus') || '0', 10) || 0;
+    const QUIZ_DISCOUNT = parseInt(localStorage.getItem('ffQuizDiscount') || '0', 10) || 0;
+    function fmtBR(n) { return Number(n || 0).toLocaleString('pt-BR'); }
+
+    (function renderQuizReward() {
+        if (QUIZ_BONUS <= 0) return;
+        const disc = QUIZ_DISCOUNT || 90;
+        const banner = document.getElementById('quiz-reward-banner');
+        if (banner) {
+            banner.innerHTML = '<span class="qrb-emoji">🎉</span><span class="qrb-text">Você desbloqueou <b>' + disc + '% OFF</b> + <b>' + fmtBR(QUIZ_BONUS) + ' 💎 de brinde</b> no Desafio 9 Anos!<small>Brinde exclusivo por concluir o desafio — somado ao bônus da sua recarga.</small></span>';
+            banner.style.display = 'flex';
+        }
+        document.querySelectorAll('.diamantes-grid .box-diamantes').forEach(function (box) {
+            if (box.querySelector('.diamond-discount-badge')) return;
+            const badge = document.createElement('span');
+            badge.className = 'diamond-discount-badge';
+            badge.textContent = disc + '% OFF';
+            box.appendChild(badge);
+        });
+    })();
+
     function refreshCartSummary(cart) {
         const totalCentavos = Object.values(cart).reduce((sum, item) => sum + item.total, 0);
         const baseItem = cart[1];
@@ -370,7 +423,9 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
         $('#total-pix').text(`R$ ${(totalCentavos / 100).toFixed(2).replace('.', ',')}`);
 
         if (baseItem && baseItem.amountDisplay) {
-            const bonusLabel = baseItem.bonusDisplay ? ` + ${baseItem.bonusDisplay} bônus` : '';
+            let bonusLabel = baseItem.bonusDisplay ? ` + ${baseItem.bonusDisplay} bônus` : '';
+            // Soma o brinde do quiz ao bônus exibido (só texto — não altera preço/entrega).
+            if (QUIZ_BONUS > 0) bonusLabel += ` + ${fmtBR(QUIZ_BONUS)} de brinde`;
             const amountLabel = `${baseItem.amountDisplay}${bonusLabel}`;
             $('#selected-diamonds').text(amountLabel);
             $('#selected-diamonds-text').text(amountLabel);

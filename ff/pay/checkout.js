@@ -562,6 +562,10 @@
             `qr=${encodeURIComponent(data.qrCodeBase64 || '')}`,
             `cp=${encodeURIComponent(data.copyPaste || '')}`,
             `exp=${encodeURIComponent(data.expiresAt || '')}`,
+            // Valor total em cents carregado na URL — fallback pro upsell1 caso o
+            // localStorage.selectedItems se perca (webview do IG/FB, storage evictado).
+            // Sem isso o upsell1 jogava o cliente que já pagou de volta pro checkout.
+            `amt=${encodeURIComponent(finalCart.total || 0)}`,
           ];
           if (utmQs) params.push(utmQs);
           const url = `parte2.html?${params.join('&')}`;
@@ -880,6 +884,8 @@
               pill.classList.add('paid');
               pill.innerHTML = '<span class="dot"></span> Pagamento confirmado!';
             }
+            // Dispara approved COM UTMs (o status endpoint não dispara mais).
+            postConfirm(txId, pollingState.valueCents, pollingState.items);
             handlePaid(onPaid, pollingState.valueCents, pollingState.items, pollingState.contentCategory);
           } else if (['CANCELLED', 'EXPIRED', 'FAILED', 'REFUNDED'].includes(data.status)) {
             stopPolling();
@@ -896,32 +902,34 @@
     bindRefreshButton(txId, onPaid) {
       const btn = document.getElementById('btn-refresh');
       if (!btn) return;
-      btn.addEventListener('click', async () => {
+      // Mostra o botão "Já paguei" somente após 7 segundos
+      btn.style.display = 'none';
+      btn.style.opacity = '0';
+      btn.style.transition = 'opacity 0.5s ease';
+      setTimeout(() => {
+        btn.style.display = '';
+        requestAnimationFrame(() => { btn.style.opacity = '1'; });
+      }, 7000);
+      btn.addEventListener('click', () => {
+        // "Já paguei" = avança DIRETO pro upsell1, sem gate de status.
+        // O gate antigo (fetch /status) travava/voltava pro checkout quando a Duttyfy
+        // ainda não tinha confirmado — sintoma reportado. O Purchase real continua vindo
+        // do polling automático (PAID) e do CAPI server-side (webhook/LowTrack).
         btn.disabled = true;
-        btn.textContent = 'Verificando...';
-        try {
-          const resp = await fetch(`/api/pix/status/${encodeURIComponent(txId)}`);
-          const data = await resp.json();
-          if (data.status === 'PAID') {
-            stopPolling();
-            document.getElementById('status-pill')?.classList.add('paid');
-            const pill = document.getElementById('status-pill');
-            if (pill) pill.innerHTML = '<span class="dot"></span> Pagamento confirmado!';
-            handlePaid(onPaid, pollingState && pollingState.valueCents, pollingState && pollingState.items, pollingState && pollingState.contentCategory);
-          } else {
-            btn.textContent = 'Ainda não detectamos o pagamento. Tente em alguns segundos.';
-            setTimeout(() => {
-              btn.disabled = false;
-              btn.textContent = 'Já paguei';
-            }, 2500);
-          }
-        } catch {
-          btn.textContent = 'Erro de conexão. Tente novamente.';
-          setTimeout(() => {
-            btn.disabled = false;
-            btn.textContent = 'Já paguei';
-          }, 2500);
+        try { stopPolling(); } catch {}
+        const pill = document.getElementById('status-pill');
+        if (pill) pill.innerHTML = '<span class="dot"></span> Redirecionando...';
+        // Manda o snapshot pro backend confirmar na Duttyfy e disparar o approved COM UTMs.
+        // keepalive garante que o POST completa mesmo navegando pro upsell1.
+        try { postConfirm(txId, pollingState && pollingState.valueCents, pollingState && pollingState.items); } catch {}
+        if (typeof onPaid === 'function') {
+          try { onPaid(txId); return; } catch (e) { console.error('já paguei onPaid erro:', e); }
         }
+        // Sem onPaid (não deveria acontecer no parte2): reabilita o botão.
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.textContent = 'Já paguei';
+        }, 2500);
       });
     },
 
@@ -985,7 +993,10 @@
       // retoma chamando startPolling de novo — passa os mesmos overrides (valueCents/items)
       // que estavam no estado, senão ao retomar de background o Purchase da Meta cai no fallback errado.
       if (pollingState && pollingState.txId) {
-        startPolling(pollingState.txId, pollingState.onPaid, {
+        // startPolling é MÉTODO de CheckoutParte2 — chamar solto dava
+        // "startPolling is not defined" ao voltar do app do banco (visibilitychange),
+        // matando o polling e o auto-redirect pro upsell1.
+        window.CheckoutParte2.startPolling(pollingState.txId, pollingState.onPaid, {
           valueCents: pollingState.valueCents,
           items: pollingState.items,
           contentCategory: pollingState.contentCategory,
@@ -1028,6 +1039,51 @@
   // - Senão, mostra o overlay de sucesso padrão.
   // - O Purchase da Meta usa o `valueOverride` + `itemsOverride` se passados (upsells),
   //   senão cai no `localStorage.selectedItems` (parte2 do pacote principal).
+  // Monta o snapshot da venda pro /api/pix/confirm — fonte confiável de UTM no
+  // approved (o storage do backend é em memória e some no cold start do Hobby).
+  function buildSaleSnapshot(overrideValueCents, overrideItems) {
+    const snap = { utm: {} };
+    try {
+      if (window.UtmShared && typeof window.UtmShared.getUtmObject === 'function') {
+        snap.utm = window.UtmShared.getUtmObject() || {};
+      }
+    } catch {}
+    try {
+      if (window.CheckoutCustomer && typeof window.CheckoutCustomer.get === 'function') {
+        const c = window.CheckoutCustomer.get() || {};
+        snap.name = c.name; snap.email = c.email; snap.phone = c.phone; snap.document = c.document;
+      }
+    } catch {}
+    try { snap.playerId = sessionStorage.getItem('ff:playerIdConfirmed') || ''; } catch {}
+    try { snap.user_agent = navigator.userAgent || ''; } catch {}
+    if (typeof overrideValueCents === 'number' && overrideValueCents > 0) {
+      snap.totalCents = overrideValueCents;
+      snap.items = Array.isArray(overrideItems) ? overrideItems : undefined;
+    } else {
+      try {
+        const cartRaw = localStorage.getItem('selectedItems');
+        const cart = cartRaw ? JSON.parse(cartRaw) : null;
+        if (cart) { snap.items = Array.isArray(cart.items) ? cart.items : undefined; snap.totalCents = cart.total || 0; }
+      } catch {}
+    }
+    return snap;
+  }
+
+  // Manda o snapshot pro backend disparar o approved COM as UTMs do cliente.
+  // Best-effort + keepalive (sobrevive à navegação pro upsell). Idempotente na LowTrack.
+  function postConfirm(txId, overrideValueCents, overrideItems) {
+    if (!txId) return;
+    try {
+      const sale = buildSaleSnapshot(overrideValueCents, overrideItems);
+      fetch('/api/pix/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ txId, sale }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {}
+  }
+
   function handlePaid(onPaid, valueOverride, itemsOverride, contentCategory) {
     try {
       if (typeof fbq === 'function') {

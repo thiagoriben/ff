@@ -23,13 +23,36 @@
     return cart;
   }
 
-  function safeRedirectParte1() {
-    // Sem cart no localStorage: usuário acessou direto (ex: link de teste).
-    // Volta pra parte1.html pra refazer o fluxo. Não vai pro obrigado — usuário ainda não comprou nada.
+  function safeRedirect() {
+    // Sem cart E sem valor recuperável.
+    // - Se tem parentTxId, o cliente JÁ PAGOU o pedido principal — NUNCA jogar de volta
+    //   pro checkout (parte1). Manda pra frente, pro obrigado.html (entrega).
+    // - Sem parentTxId = acesso direto (link de teste) → volta pra parte1 refazer o fluxo.
     const utmQs = (getUtmSuffix() || '').replace(/^\?/, '');
-    let url = `parte1.html`;
+    const parentTxId = getQueryParam('parentTxId') || '';
+    let url = parentTxId
+      ? `obrigado.html?parentTxId=${encodeURIComponent(parentTxId)}`
+      : `parte1.html`;
     if (utmQs) url += (url.includes('?') ? '&' : '?') + utmQs;
     window.location.replace(url);
+  }
+
+  // Reconstrói um cart mínimo a partir do valor pago carregado na URL (?amt=cents).
+  // Usado quando o localStorage.selectedItems se perde entre parte2 e upsell1
+  // (webview do IG/FB abre nova sessão, storage evictado). Sem isso o cliente que
+  // já pagou era jogado de volta pro checkout e a oferta de upsell era perdida.
+  function rebuildCartFromUrl() {
+    const amt = parseInt(getQueryParam('amt') || '0', 10);
+    if (!(amt > 0)) return false;
+    try {
+      localStorage.setItem('selectedItems', JSON.stringify({
+        items: [{ id: 'diamantes-pedido', name: 'Diamantes Free Fire', price: amt, qty: 1, total: amt }],
+        total: amt,
+      }));
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   function getQueryParam(name) {
@@ -128,6 +151,13 @@
     const oldEl = document.getElementById('price-old');
     if (oldEl) oldEl.textContent = (window.CheckoutUtils ? CheckoutUtils.formatBRLFromCents(totalCents) : `R$ ${(totalCents / 100).toFixed(2).replace('.', ',')}`);
 
+    // Descrição da quantidade de diamantes garantida (pra copy do upsell).
+    const qtyEl = document.getElementById('up1-qty');
+    if (qtyEl) {
+      const amounts = diamondsForList.map((it) => String(it.amountDisplay || '').trim()).filter(Boolean);
+      qtyEl.textContent = amounts.length ? `${amounts.join(' + ')} diamantes` : 'seus diamantes';
+    }
+
     return { diamonds, totalCents, offerCents, qty };
   }
 
@@ -181,6 +211,21 @@
     }
   }
 
+  // ID da conta Free Fire — OBRIGATÓRIO no /api/pix/create (6-20 dígitos).
+  // Sem isso o create rejeita com player_id_invalido e o upsell dá "Erro ao gerar PIX".
+  function getPlayerId() {
+    let id = '';
+    try { id = (sessionStorage.getItem('ff:playerIdConfirmed') || '').replace(/\D/g, '').slice(0, 20); } catch {}
+    if (!id) { try { id = (sessionStorage.getItem('ff:playerId') || '').replace(/\D/g, '').slice(0, 20); } catch {} }
+    if (!id) {
+      try {
+        const p = JSON.parse(localStorage.getItem('player') || 'null');
+        id = String((p && ((p.data && p.data.id) || (p.result && p.result.id) || p.id)) || '').replace(/\D/g, '').slice(0, 20);
+      } catch {}
+    }
+    return id;
+  }
+
   async function createUpsellPix({ offerCents, label, idemKey }) {
     const customer = (window.CheckoutCustomer ? CheckoutCustomer.get() : { name: 'Cliente Upsell 1', email: 'upsell1@temp.com', phone: '11999999999', document: '00000000000' });
     const crId = getOrCreateClientRequestId(idemKey || 'up1-stage' + stage);
@@ -196,7 +241,8 @@
         email: customer.email,
         phone: customer.phone,
         document: customer.document,
-        items: [{ id: `up1-stage${stage}`, name: label, price: offerCents, qty: 1 }],
+        playerId: getPlayerId(),
+        items: [{ id: 1, name: label, price: offerCents, qty: 1 }],
         totalCents: offerCents,
         utm: getUtmSuffix() || '',
       }),
@@ -302,11 +348,16 @@
   // ============ INIT ============
 
   document.addEventListener('DOMContentLoaded', () => {
-    // Guard: sem cart válido no localStorage, não tem como montar oferta.
-    // Volta pro parte1.html pra usuário refazer o checkout (não pro obrigado — não comprou nada).
-    const validCart = getValidCart();
+    // Guard: sem cart válido no localStorage, tenta reconstruir do ?amt= na URL
+    // (cliente já pagou o principal, mas o storage sumiu). Só desiste se não der.
+    let validCart = getValidCart();
     if (!validCart) {
-      safeRedirectParte1();
+      if (rebuildCartFromUrl()) {
+        validCart = getValidCart();
+      }
+    }
+    if (!validCart) {
+      safeRedirect();
       return;
     }
 

@@ -28,14 +28,25 @@ function normalizePhone(phoneDigits, defaultCountry = '55') {
   return p;
 }
 
+// Detecta macro do Meta que NÃO foi substituída (ex: "{{campaign.name}}").
+// Acontece em tráfego compartilhado/Stories/orgânico onde o Meta não troca a
+// macro. Repassar isso pra LowTrack polui o relatório de campanha (aparece
+// "{{campaign.name}}" no lugar do nome real). Melhor dropar o valor e manter
+// só os campos atribuíveis (utm_id, fbclid, etc).
+function isUnresolvedMacro(v) {
+  const s = String(v || '');
+  return s.includes('{{') || s.includes('}}');
+}
+
 function buildTracking(utm) {
   const tracking = {};
   if (!utm || typeof utm !== 'object') return tracking;
   ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach((k) => {
-    if (utm[k]) tracking[k] = String(utm[k]).slice(0, 200);
+    if (utm[k] && !isUnresolvedMacro(utm[k])) tracking[k] = String(utm[k]).slice(0, 200);
   });
-  ['fbclid', 'gclid', 'gbraid', 'wbraid', 'ttclid', 'msclkid', 'xcod', 'sck', 'src'].forEach((k) => {
-    if (utm[k]) tracking[k] = String(utm[k]).slice(0, 200);
+  // utm_id + click-ids ainda atribuem a venda por ID mesmo sem os nomes.
+  ['utm_id', 'fbclid', 'gclid', 'gbraid', 'wbraid', 'ttclid', 'msclkid', 'xcod', 'sck', 'src'].forEach((k) => {
+    if (utm[k] && !isUnresolvedMacro(utm[k])) tracking[k] = String(utm[k]).slice(0, 200);
   });
   return tracking;
 }

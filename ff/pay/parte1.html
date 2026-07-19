@@ -152,23 +152,32 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
     display: none;
     align-items: center;
     justify-content: center;
-    padding: 16px;
-    overflow-y: auto;
+    padding: 12px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   }
   .upsell-overlay.show { display: flex; animation: fadeIn 0.25s ease; }
   .upsell-panel {
     background: #ffffff;
     border: 1px solid var(--border);
     border-radius: 20px;
-    padding: 22px 18px;
+    padding: 18px 16px;
     max-width: 440px;
     width: 100%;
     box-shadow: 0 20px 60px rgba(15, 18, 28, 0.22);
     animation: slideUp 0.32s cubic-bezier(0.4, 0, 0.2, 1);
-    max-height: calc(100vh - 32px);
-    overflow-y: auto;
+    /* dvh cobre a barra do navegador no mobile (iOS Safari) */
+    max-height: 88vh;
+    max-height: 88dvh;
+    display: flex;
+    flex-direction: column;
     position: relative;
   }
+  /* Header fixo, lista rola, rodapé (resumo + botões) sempre visível */
+  .upsell-panel .upsell-header { flex: 0 0 auto; }
+  .upsell-panel #upsell-list { flex: 1 1 auto; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; }
+  .upsell-panel .upsell-summary,
+  .upsell-panel .upsell-actions { flex: 0 0 auto; }
+  .upsell-panel .upsell-actions { margin-top: 10px; background: #fff; }
   .upsell-header {
     text-align: center;
     margin-bottom: 16px;
@@ -547,37 +556,38 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
       <input type="tel" id="phone" name="phone" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999" maxlength="16">
     </div>
 
-    <!-- === ID da conta Free Fire que vai receber os diamantes === -->
+    <!-- === Confirmação do ID da conta Free Fire (vindo da loja) === -->
     <div class="form-group" id="player-id-group">
-      <label for="player-id-checkout">
-        ID da conta que vai receber
-        <span style="color:var(--muted);font-weight:500;font-size:0.78rem;">(apenas números)</span>
+      <label style="margin-bottom:6px;">CONFIRME SEU ID
+        <span style="color:var(--muted);font-weight:500;font-size:0.78rem;">(conta que vai receber os diamantes)</span>
       </label>
-      <input
-        type="text"
-        id="player-id-checkout"
-        name="player-id-checkout"
-        inputmode="numeric"
-        autocomplete="off"
-        placeholder="Ex: 123456789"
-        maxlength="20"
-        pattern="[0-9]{6,20}"
-        style="font-family:ui-monospace,Menlo,monospace;letter-spacing:0.06em;font-weight:700;text-align:center;">
-      <div id="player-id-confirm-wrap" style="display:none;margin-top:8px;">
-        <label for="player-id-confirm" style="font-size:0.78rem;color:var(--ink-soft);">
-          Digite o ID novamente pra confirmar
-        </label>
+
+      <!-- Modo confirmar: mostra o ID digitado na loja -->
+      <div id="ffid-confirm-view" style="display:none;">
+        <div id="player-id-display-value" style="font-family:ui-monospace,Menlo,monospace;font-size:1.5rem;font-weight:800;text-align:center;letter-spacing:0.08em;padding:14px;border:1.5px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg-soft,#f7f7f8);color:var(--ink,#111);"></div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button type="button" id="ffid-confirm-btn" style="flex:1;padding:13px;border:0;border-radius:10px;background:linear-gradient(135deg,#2ea84f,#1f8f40);color:#fff;font-weight:800;letter-spacing:0.03em;cursor:pointer;">Confirmar</button>
+          <button type="button" id="ffid-edit-btn" style="flex:0 0 auto;padding:13px 16px;border:1.5px solid var(--border,#d1d5db);border-radius:10px;background:#fff;color:var(--ink,#111);font-weight:700;cursor:pointer;">Alterar ID</button>
+        </div>
+        <div id="ffid-confirmed-badge" style="display:none;margin-top:10px;text-align:center;color:#1f8f40;font-weight:800;font-size:0.9rem;">✓ ID confirmado</div>
+      </div>
+
+      <!-- Modo digitar: input (fallback / alterar) -->
+      <div id="ffid-input-view" style="display:none;">
         <input
           type="text"
-          id="player-id-confirm"
-          name="player-id-confirm"
+          id="player-id-checkout"
+          name="player-id-checkout"
           inputmode="numeric"
           autocomplete="off"
-          placeholder="Repita o ID"
+          placeholder="Ex: 123456789"
           maxlength="20"
+          pattern="[0-9]{6,20}"
           style="font-family:ui-monospace,Menlo,monospace;letter-spacing:0.06em;font-weight:700;text-align:center;">
-        <div id="player-id-error" style="display:none;color:#c92a2a;font-size:0.78rem;margin-top:6px;font-weight:600;"></div>
+        <button type="button" id="ffid-save-btn" style="width:100%;margin-top:8px;padding:13px;border:0;border-radius:10px;background:linear-gradient(135deg,#2ea84f,#1f8f40);color:#fff;font-weight:800;cursor:pointer;">Confirmar ID</button>
       </div>
+
+      <div id="player-id-error" style="display:none;color:#c92a2a;font-size:0.78rem;margin-top:8px;font-weight:600;text-align:center;"></div>
     </div>
 
     <div id="form-error" class="form-error"></div>
@@ -586,78 +596,8 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
     </p>
   </div>
 
-  <div class="card promo-9anos" id="upsell-section" hidden>
-    <p class="section-title">Bônus — promoção 9 Anos</p>
-    <p style="font-size:0.82rem;color:var(--ink-soft);margin:0 0 10px;line-height:1.4;">
-      Toque pra adicionar pelo preço promocional.
-    </p>
-
-    <div class="up-tile-grid">
-      <button type="button" class="up-tile" data-id="up-d100" data-name="Pacote Diamantes 100 + 30 bônus" data-price="2.90">
-        <div class="up-tile-info">
-          <strong>Pacote Diamantes 100</strong>
-          <span>+30 bônus</span>
-        </div>
-        <div class="up-tile-price">
-          <span class="old">R$ 4,90</span>
-          <strong>R$ 2,90</strong>
-        </div>
-      </button>
-
-      <button type="button" class="up-tile" data-id="up-d310" data-name="Pacote Diamantes 310 + 30 bônus" data-price="5.90">
-        <div class="up-tile-info">
-          <strong>Pacote Diamantes 310</strong>
-          <span>+30 bônus</span>
-        </div>
-        <div class="up-tile-price">
-          <span class="old">R$ 9,90</span>
-          <strong>R$ 5,90</strong>
-        </div>
-      </button>
-
-      <button type="button" class="up-tile" data-id="up-d1080" data-name="Pacote Diamantes 1.080 + 30 bônus" data-price="11.90">
-        <div class="up-tile-info">
-          <strong>Pacote Diamantes 1.080</strong>
-          <span>+30 bônus</span>
-        </div>
-        <div class="up-tile-price">
-          <span class="old">R$ 19,90</span>
-          <strong>R$ 11,90</strong>
-        </div>
-      </button>
-
-      <button type="button" class="up-tile" data-id="up-d2180" data-name="Pacote Diamantes 2.180 + 30 bônus" data-price="19.90">
-        <div class="up-tile-info">
-          <strong>Pacote Diamantes 2.180</strong>
-          <span>+30 bônus</span>
-        </div>
-        <div class="up-tile-price">
-          <span class="old">R$ 29,90</span>
-          <strong>R$ 19,90</strong>
-        </div>
-      </button>
-
-      <button type="button" class="up-tile" data-id="up-pass" data-name="Passe Mensal Free Fire (30 dias)" data-price="9.90">
-        <div class="up-tile-info">
-          <strong>Passe Mensal — 30 dias</strong>
-          <span>Diárias + missões</span>
-        </div>
-        <div class="up-tile-price">
-          <span class="old">R$ 14,90</span>
-          <strong>R$ 9,90</strong>
-        </div>
-      </button>
-    </div>
-  </div>
-
-  <div id="player-id-display" style="display:none;margin-top:14px;padding:14px;border:1px solid var(--border, #e5e7eb);border-radius:10px;background:var(--bg-soft, #f7f7f8);">
-    <div style="font-size:0.78rem;color:var(--ink-soft, #555);margin-bottom:4px;">
-      Confirme o ID da conta que vai receber a recarga:
-    </div>
-    <div style="font-weight:600;font-size:0.95rem;color:var(--ink, #111);font-family:ui-monospace,Menlo,monospace;letter-spacing:0.06em;" id="player-id-display-value">
-      (digite sua ID acima)
-    </div>
-  </div>
+  <!-- Seção "Bônus — promoção 9 Anos" (up-tiles inline) removida a pedido.
+       O upsell antes de gerar o PIX segue no popup #upsell-overlay. -->
 
   <div id="submit-wrap">
     <button type="button" id="submit-btn" class="btn-primary is-disabled" data-disabled="true" aria-disabled="true">
@@ -794,158 +734,106 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
     if (footerTotal) footerTotal.textContent = document.getElementById('cart-total').textContent;
     CheckoutParte1.bindForm();
 
-    // === ID da conta Free Fire + confirmação ===
-    const idInput = document.getElementById('player-id-checkout');
-    const idConfirmWrap = document.getElementById('player-id-confirm-wrap');
-    const idConfirm = document.getElementById('player-id-confirm');
-    const idError = document.getElementById('player-id-error');
-    const idDisplayBlock = document.getElementById('player-id-display');
-    const idDisplayValue = document.getElementById('player-id-display-value');
-
-    function updateIdDisplay() {
-      if (!idDisplayBlock || !idDisplayValue || !idInput) return;
-      const v = onlyDigits(idInput.value);
-      if (v.length > 0) {
-        idDisplayBlock.style.display = 'block';
-        idDisplayValue.textContent = v;
-      } else {
-        idDisplayBlock.style.display = 'none';
-        idDisplayValue.textContent = '(digite sua ID acima)';
-      }
-    }
-
-    // Pré-preenche com o ID que veio da loja (logado.html grava em sessionStorage)
-    const PRE_ID_KEY = 'ff:playerId';
-    let initialId = '';
-    try { initialId = (sessionStorage.getItem(PRE_ID_KEY) || '').replace(/\D/g, '').slice(0, 20); } catch {}
-    if (initialId && idInput && !idInput.value) idInput.value = initialId;
-
+    // === Confirmação do ID da conta Free Fire (vindo da loja) ===
     const PLAYER_ID_KEY = 'ff:playerIdConfirmed';
+    const confirmView = document.getElementById('ffid-confirm-view');
+    const inputView = document.getElementById('ffid-input-view');
+    const shownEl = document.getElementById('player-id-display-value');
+    const confirmBtn = document.getElementById('ffid-confirm-btn');
+    const editBtn = document.getElementById('ffid-edit-btn');
+    const saveBtn = document.getElementById('ffid-save-btn');
+    const idInput = document.getElementById('player-id-checkout');
+    const confirmedBadge = document.getElementById('ffid-confirmed-badge');
+    const idError = document.getElementById('player-id-error');
 
     function onlyDigits(s) { return String(s || '').replace(/\D/g, '').slice(0, 20); }
-
     function validateIdShape(id) {
       const n = onlyDigits(id);
       if (n.length < 6 || n.length > 20) return false;
-      // Não aceita tudo zeros (placeholder óbvio)
-      if (/^0+$/.test(n)) return false;
+      if (/^0+$/.test(n)) return false; // não aceita tudo zeros
       return true;
     }
+    function showIdError(msg) { if (idError) { idError.textContent = msg; idError.style.display = 'block'; } }
+    function hideIdError() { if (idError) { idError.textContent = ''; idError.style.display = 'none'; } }
 
-    function showIdError(msg) {
-      if (!idError) return;
-      idError.textContent = msg;
-      idError.style.display = 'block';
-    }
-    function hideIdError() {
-      if (!idError) return;
-      idError.textContent = '';
-      idError.style.display = 'none';
-    }
-
-    function checkConfirmNeeded() {
-      if (!idInput || !idConfirmWrap) return;
-      const v = onlyDigits(idInput.value);
-      if (v.length >= 6 && validateIdShape(v)) {
-        idConfirmWrap.style.display = 'block';
-      } else {
-        idConfirmWrap.style.display = 'none';
-        if (idConfirm) idConfirm.value = '';
-        hideIdError();
+    // Fonte do ID: sessionStorage ff:playerId (gravado no login) → fallback localStorage.player.
+    function getStoreId() {
+      let id = '';
+      try { id = onlyDigits(sessionStorage.getItem('ff:playerId') || ''); } catch {}
+      if (!id) {
+        try {
+          const p = JSON.parse(localStorage.getItem('player') || 'null');
+          id = onlyDigits((p && ((p.data && p.data.id) || (p.result && p.result.id) || p.id)) || '');
+        } catch {}
       }
+      return id;
     }
 
-    function maybeSaveConfirmed() {
-      if (!idInput || !idConfirm) return false;
-      const a = onlyDigits(idInput.value);
-      const b = onlyDigits(idConfirm.value);
-      if (!validateIdShape(a)) return false;
-      if (a !== b) {
-        showIdError('Os IDs não conferem. Digite o mesmo ID nos dois campos.');
-        return false;
-      }
+    function markConfirmed(id) {
+      try { sessionStorage.setItem(PLAYER_ID_KEY, id); } catch {}
+      if (confirmedBadge) confirmedBadge.style.display = 'block';
       hideIdError();
-      try { sessionStorage.setItem(PLAYER_ID_KEY, a); } catch {}
-      return true;
+    }
+    function clearConfirmed() {
+      try { sessionStorage.removeItem(PLAYER_ID_KEY); } catch {}
+      if (confirmedBadge) confirmedBadge.style.display = 'none';
+    }
+    function showConfirmView(id) {
+      if (shownEl) shownEl.textContent = id;
+      if (confirmView) confirmView.style.display = 'block';
+      if (inputView) inputView.style.display = 'none';
+      if (confirmedBadge) confirmedBadge.style.display = 'none';
+    }
+    function showInputView(prefill) {
+      if (inputView) inputView.style.display = 'block';
+      if (confirmView) confirmView.style.display = 'none';
+      if (idInput) { idInput.value = onlyDigits(prefill || ''); }
     }
 
-    // Garante que checkConfirmNeeded rode quando CheckoutParte1.bindForm revela o botão
-    // (porque o botão só destrava depois de email + telefone OK)
-    function tryAutoCheck() {
-      if (idInput && idInput.value.length > 0) checkConfirmNeeded();
-    }
-    setTimeout(tryAutoCheck, 200);
-    setTimeout(tryAutoCheck, 800);
+    // Init: se veio ID válido da loja → modo confirmar; senão → modo digitar.
+    const storeId = getStoreId();
+    if (validateIdShape(storeId)) showConfirmView(storeId);
+    else showInputView('');
 
-    if (idInput) {
-      idInput.addEventListener('input', () => {
-        idInput.value = onlyDigits(idInput.value);
-        hideIdError();
-        updateIdDisplay();
-        checkConfirmNeeded();
-      });
-      // Atualiza display se valor pré-preenchido
-      updateIdDisplay();
-    }
-    if (idConfirm) {
-      idConfirm.addEventListener('input', () => {
-        idConfirm.value = onlyDigits(idConfirm.value);
-        // Validação em tempo real: mostra se IDs batem conforme o usuário digita
-        const a = onlyDigits(idInput.value);
-        const b = onlyDigits(idConfirm.value);
-        if (b.length === 0) {
-          hideIdError();
-          idConfirm.style.borderColor = '';
-          idConfirm.style.boxShadow = '';
-        } else if (b.length >= 6 && a === b) {
-          hideIdError();
-          idConfirm.style.borderColor = 'var(--green, #2ea84f)';
-          idConfirm.style.boxShadow = '0 0 0 3px rgba(46, 168, 79, 0.15)';
-        } else if (b.length >= a.length || b.length >= 6) {
-          // Só mostra erro quando já digitou o suficiente pra comparar
-          if (a !== b) {
-            showIdError('Os IDs não conferem. Digite o mesmo ID nos dois campos.');
-            idConfirm.style.borderColor = '#c92a2a';
-            idConfirm.style.boxShadow = '0 0 0 3px rgba(201, 42, 42, 0.12)';
-          }
-        } else {
-          hideIdError();
-          idConfirm.style.borderColor = '';
-          idConfirm.style.boxShadow = '';
-        }
-      });
-    }
+    if (confirmBtn) confirmBtn.addEventListener('click', () => {
+      const id = onlyDigits(shownEl ? shownEl.textContent : '');
+      if (!validateIdShape(id)) { showInputView(''); if (idInput) idInput.focus(); return; }
+      markConfirmed(id);
+    });
+    if (editBtn) editBtn.addEventListener('click', () => {
+      clearConfirmed();
+      showInputView(onlyDigits(shownEl ? shownEl.textContent : ''));
+      if (idInput) idInput.focus();
+    });
+    if (idInput) idInput.addEventListener('input', () => {
+      idInput.value = onlyDigits(idInput.value);
+      hideIdError();
+      clearConfirmed(); // mudou o id → precisa confirmar de novo
+    });
+    if (saveBtn) saveBtn.addEventListener('click', () => {
+      const id = onlyDigits(idInput ? idInput.value : '');
+      if (!validateIdShape(id)) { showIdError('Digite um ID válido (6 a 20 dígitos).'); if (idInput) idInput.focus(); return; }
+      showConfirmView(id);
+      markConfirmed(id);
+    });
 
-    // Hook ANTES do submit: bloqueia se ID não foi confirmado.
-    // O CheckoutParte1.bindForm amarra o click no submit; interceptamos via
-    // listener capture que valida antes do handler original.
+    // Gate do submit: bloqueia se o ID não foi confirmado (ff:playerIdConfirmed válido).
     const submitBtn = document.getElementById('submit-btn');
     if (submitBtn) {
       submitBtn.addEventListener('click', function gate(e) {
-        if (!idInput || !idConfirm) return;
-        const a = onlyDigits(idInput.value);
-        const b = onlyDigits(idConfirm.value);
-        if (!validateIdShape(a)) {
+        let cid = '';
+        try { cid = onlyDigits(sessionStorage.getItem(PLAYER_ID_KEY) || ''); } catch {}
+        if (!validateIdShape(cid)) {
           e.preventDefault(); e.stopImmediatePropagation();
-          showIdError('Informe o ID da conta que vai receber (6 a 20 dígitos).');
-          idInput.focus();
-          return;
-        }
-        if (idConfirmWrap.style.display === 'none' || !b) {
-          e.preventDefault(); e.stopImmediatePropagation();
-          checkConfirmNeeded();
-          showIdError('Confirme o ID digitando-o novamente.');
-          idConfirm && idConfirm.focus();
-          return;
-        }
-        if (a !== b) {
-          e.preventDefault(); e.stopImmediatePropagation();
-          showIdError('Os IDs não conferem. Digite o mesmo ID nos dois campos.');
-          idConfirm.focus();
+          if (inputView && inputView.style.display !== 'none') {
+            showIdError('Digite e confirme seu ID.');
+            if (idInput) idInput.focus();
+          } else {
+            showIdError('Confirme seu ID pra continuar.');
+          }
           return;
         }
         hideIdError();
-        try { sessionStorage.setItem(PLAYER_ID_KEY, a); } catch {}
       }, true);
     }
   });

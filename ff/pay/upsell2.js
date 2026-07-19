@@ -54,6 +54,20 @@
     }
   }
 
+  // ID da conta Free Fire — OBRIGATÓRIO no /api/pix/create (6-20 dígitos).
+  function getPlayerId() {
+    let id = '';
+    try { id = (sessionStorage.getItem('ff:playerIdConfirmed') || '').replace(/\D/g, '').slice(0, 20); } catch {}
+    if (!id) { try { id = (sessionStorage.getItem('ff:playerId') || '').replace(/\D/g, '').slice(0, 20); } catch {} }
+    if (!id) {
+      try {
+        const p = JSON.parse(localStorage.getItem('player') || 'null');
+        id = String((p && ((p.data && p.data.id) || (p.result && p.result.id) || p.id)) || '').replace(/\D/g, '').slice(0, 20);
+      } catch {}
+    }
+    return id;
+  }
+
   async function createPix({ priceCents, label, saleIdSuffix, idemKey }) {
     const customer = (window.CheckoutCustomer ? CheckoutCustomer.get() : { name: 'Cliente Garantia Garena', email: 'upsell2@temp.com', phone: '11999999999', document: '00000000000' });
     const crId = getOrCreateClientRequestId(idemKey || 'up2-' + saleIdSuffix);
@@ -69,7 +83,8 @@
         email: customer.email,
         phone: customer.phone,
         document: customer.document,
-        items: [{ id: `up2-${saleIdSuffix}`, name: label, price: priceCents, qty: 1 }],
+        playerId: getPlayerId(),
+        items: [{ id: 1, name: label, price: priceCents, qty: 1 }],
         totalCents: priceCents,
         utm: getUtmSuffix() || '',
       }),

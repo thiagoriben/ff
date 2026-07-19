@@ -105,7 +105,7 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
     </p>
   </div>
 
-  <button id="btn-refresh" type="button" class="btn-primary">
+  <button id="btn-refresh" type="button" class="btn-primary" style="display:none">
     <i class="fa-solid fa-arrows-rotate"></i> Já paguei
   </button>
 
@@ -140,6 +140,7 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
 </div>
 
 <script src="utm-helper.js"></script>
+<script src="customer.js"></script>
 <script src="checkout.js"></script>
 <script src="trust.js"></script>
 <script>
@@ -203,7 +204,10 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
 
     // Quando o pagamento for confirmado (PAID), redireciona pro upsell1.html
     function goToUpsell1(txId) {
+      // Repassa o valor pago (amt) pro upsell1 — fallback se o localStorage sumir.
+      const amt = getQueryParam('amt') || '';
       let url = `upsell1.html?parentTxId=${encodeURIComponent(txId || '')}`;
+      if (amt) url += `&amt=${encodeURIComponent(amt)}`;
       // UtmShared.appendToUrl adiciona ? ou & automaticamente conforme já existe query
       url = window.UtmShared && typeof window.UtmShared.appendToUrl === 'function'
         ? window.UtmShared.appendToUrl(url)
