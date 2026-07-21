@@ -758,6 +758,10 @@ h1 {
   object-fit: contain;
 }
 
+.redeem-art-wrap {
+  position: relative;
+}
+
 .redeem-video {
   display: block;
   width: 100%;
@@ -767,10 +771,62 @@ h1 {
   object-fit: contain;
 }
 
+.redeem-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #fff;
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.72));
+  transition: opacity 0.25s ease;
+}
+
+.redeem-play-overlay.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.redeem-play-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  color: #14052a;
+  background: var(--gold, #ffd24d);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  animation: ctaPulse 1.8s ease-in-out infinite;
+}
+
+.redeem-play-text {
+  font-family: var(--ff-copy);
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
 .primary-action.redeem-locked {
   opacity: 0.55;
   cursor: not-allowed;
   filter: grayscale(0.35);
+}
+
+/* O atributo [hidden] precisa vencer o display:flex de .primary-action,
+   senão o botão de resgate aparece antes do vídeo iniciar. */
+.primary-action[hidden],
+.redeem-note[hidden] {
+  display: none !important;
 }
 
 .redeem-status,
