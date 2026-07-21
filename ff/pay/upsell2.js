@@ -96,7 +96,6 @@
 
   function goToUpsellPay(stageLabel, txData) {
     const parentTxId = encodeURIComponent(getQueryParam('parentTxId') || '');
-    const utmQs = (getUtmSuffix() || '').replace(/^\?/, '');
     const amount = encodeURIComponent(txData.amount || '');
     const label = encodeURIComponent(txData.label || '');
     // amt = valor do pedido principal; precisa sobreviver até o Dobro Diamantes
@@ -104,7 +103,10 @@
     const amt = getQueryParam('amt') || '';
     let url = `upsell2-pay.html?stage=${stageLabel}&parentTxId=${parentTxId}&amount=${amount}&label=${label}`;
     if (amt) url += `&amt=${encodeURIComponent(amt)}`;
-    if (utmQs) url += `&${utmQs}`;
+    // UTMs deduplicados ANTES dos dados da transação (que são únicos por PIX).
+    url = (window.UtmShared && typeof window.UtmShared.appendToUrl === 'function')
+      ? window.UtmShared.appendToUrl(url)
+      : url;
     url += `&txId=${encodeURIComponent(txData.transactionId)}&qr=${encodeURIComponent(txData.qrCodeBase64 || '')}&cp=${encodeURIComponent(txData.copyPaste)}&exp=${encodeURIComponent(txData.expiresAt || '')}`;
     window.location.href = url;
   }
@@ -115,10 +117,12 @@
   function goToNextUpsell() {
     const parentTxId = encodeURIComponent(getQueryParam('parentTxId') || '');
     const amt = getQueryParam('amt') || '';
-    const utmQs = (getUtmSuffix() || '').replace(/^\?/, '');
     let url = `upsell1.html?parentTxId=${parentTxId}`;
     if (amt) url += `&amt=${encodeURIComponent(amt)}`;
-    if (utmQs) url += `&${utmQs}`;
+    // appendToUrl deduplica (não re-adiciona parentTxId/amt já presentes na URL).
+    url = (window.UtmShared && typeof window.UtmShared.appendToUrl === 'function')
+      ? window.UtmShared.appendToUrl(url)
+      : url;
     window.location.href = url;
   }
 

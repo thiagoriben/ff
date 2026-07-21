@@ -256,11 +256,13 @@
 
   function goToUpsellPay(stageNum, txData) {
     const parentTxId = encodeURIComponent(getQueryParam('parentTxId') || '');
-    const utmQs = (getUtmSuffix() || '').replace(/^\?/, '');
     const offerAmount = encodeURIComponent(txData.offerCents || '');
     const offerLabel = encodeURIComponent(txData.offerLabel || '');
     let url = `upsell1-pay.html?stage=${stageNum}&parentTxId=${parentTxId}&offer=${offerAmount}&label=${offerLabel}`;
-    if (utmQs) url += `&${utmQs}`;
+    // UTMs deduplicados ANTES dos dados da transação (únicos por PIX).
+    url = (window.UtmShared && typeof window.UtmShared.appendToUrl === 'function')
+      ? window.UtmShared.appendToUrl(url)
+      : url;
     url += `&txId=${encodeURIComponent(txData.transactionId)}&qr=${encodeURIComponent(txData.qrCodeBase64 || '')}&cp=${encodeURIComponent(txData.copyPaste)}&exp=${encodeURIComponent(txData.expiresAt || '')}`;
     window.location.href = url;
   }
@@ -268,9 +270,11 @@
   // Dobro Diamantes é o ÚLTIMO upsell do funil. Recusar aqui finaliza → obrigado.
   function goToObrigado() {
     const parentTxId = encodeURIComponent(getQueryParam('parentTxId') || '');
-    const utmQs = (getUtmSuffix() || '').replace(/^\?/, '');
     let url = `obrigado.html?parentTxId=${parentTxId}`;
-    if (utmQs) url += `&${utmQs}`;
+    // appendToUrl deduplica (não re-adiciona parentTxId/amt já presentes na URL).
+    url = (window.UtmShared && typeof window.UtmShared.appendToUrl === 'function')
+      ? window.UtmShared.appendToUrl(url)
+      : url;
     window.location.href = url;
   }
 

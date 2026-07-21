@@ -47,12 +47,34 @@
     if (!url) return url;
     const suffix = getSuffix();
     if (!suffix) return url;
-    // suffix já começa com "?" — então só concatena com & ou direto
-    const connector = url.indexOf('?') >= 0 ? '&' : '?';
-    // Se o "?" do suffix está colado no conector, remove
     const cleanSuffix = suffix.replace(/^\?/, '');
     if (!cleanSuffix) return url;
-    return url + connector + cleanSuffix;
+
+    // Deduplica: não re-adiciona chaves que a URL de destino já possui.
+    // Sem isso, o fallback getSuffix()=location.search reinjetava parentTxId/amt
+    // a cada salto do funil, fazendo a query crescer indefinidamente.
+    const existingKeys = new Set();
+    const qIndex = url.indexOf('?');
+    if (qIndex >= 0) {
+      for (const part of url.slice(qIndex + 1).split('&')) {
+        const k = part.split('=')[0];
+        if (k) existingKeys.add(k);
+      }
+    }
+
+    const toAppend = [];
+    for (const part of cleanSuffix.split('&')) {
+      if (!part) continue;
+      const k = part.split('=')[0];
+      if (k && !existingKeys.has(k)) {
+        existingKeys.add(k);
+        toAppend.push(part);
+      }
+    }
+    if (toAppend.length === 0) return url;
+
+    const connector = qIndex >= 0 ? '&' : '?';
+    return url + connector + toAppend.join('&');
   }
 
   function getUtmObject() {
