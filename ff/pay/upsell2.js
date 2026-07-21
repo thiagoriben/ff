@@ -99,16 +99,25 @@
     const utmQs = (getUtmSuffix() || '').replace(/^\?/, '');
     const amount = encodeURIComponent(txData.amount || '');
     const label = encodeURIComponent(txData.label || '');
+    // amt = valor do pedido principal; precisa sobreviver até o Dobro Diamantes
+    // (2º upsell) pra onde o upsell2-pay redireciona após o pagamento.
+    const amt = getQueryParam('amt') || '';
     let url = `upsell2-pay.html?stage=${stageLabel}&parentTxId=${parentTxId}&amount=${amount}&label=${label}`;
+    if (amt) url += `&amt=${encodeURIComponent(amt)}`;
     if (utmQs) url += `&${utmQs}`;
     url += `&txId=${encodeURIComponent(txData.transactionId)}&qr=${encodeURIComponent(txData.qrCodeBase64 || '')}&cp=${encodeURIComponent(txData.copyPaste)}&exp=${encodeURIComponent(txData.expiresAt || '')}`;
     window.location.href = url;
   }
 
-  function goToObrigado() {
+  // Garantia é o 1º upsell. Recusar tudo aqui NÃO finaliza o funil — segue pro
+  // 2º upsell (Dobro Diamantes, upsell1.html). O amt (valor pago no pedido
+  // principal) é repassado adiante, pois o Dobro o usa pra calcular a oferta.
+  function goToNextUpsell() {
     const parentTxId = encodeURIComponent(getQueryParam('parentTxId') || '');
+    const amt = getQueryParam('amt') || '';
     const utmQs = (getUtmSuffix() || '').replace(/^\?/, '');
-    let url = `obrigado.html?parentTxId=${parentTxId}`;
+    let url = `upsell1.html?parentTxId=${parentTxId}`;
+    if (amt) url += `&amt=${encodeURIComponent(amt)}`;
     if (utmQs) url += `&${utmQs}`;
     window.location.href = url;
   }
@@ -226,11 +235,11 @@
       });
     }
 
-    // --- Stage 3: recusar → vai pro obrigado ---
+    // --- Stage 3: recusar → segue pro 2º upsell (Dobro Diamantes) ---
     const declineLast = document.getElementById('btn-decline-last');
     if (declineLast) {
       declineLast.addEventListener('click', () => {
-        goToObrigado();
+        goToNextUpsell();
       });
     }
 

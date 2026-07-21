@@ -265,10 +265,11 @@
     window.location.href = url;
   }
 
-  function goToUpsell2() {
+  // Dobro Diamantes é o ÚLTIMO upsell do funil. Recusar aqui finaliza → obrigado.
+  function goToObrigado() {
     const parentTxId = encodeURIComponent(getQueryParam('parentTxId') || '');
     const utmQs = (getUtmSuffix() || '').replace(/^\?/, '');
-    let url = `upsell2.html?parentTxId=${parentTxId}`;
+    let url = `obrigado.html?parentTxId=${parentTxId}`;
     if (utmQs) url += `&${utmQs}`;
     window.location.href = url;
   }
@@ -347,7 +348,7 @@
       const newDecline = declineBtn.cloneNode(true);
       declineBtn.parentNode.replaceChild(newDecline, declineBtn);
       newDecline.addEventListener('click', () => {
-        goToUpsell2();
+        goToObrigado();
       });
     }
   }

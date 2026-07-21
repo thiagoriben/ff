@@ -202,8 +202,12 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
 
     CheckoutParte2.init({
       onPaid: function () {
+        // Garantia paga → segue pro 2º upsell (Dobro Diamantes). Repassa o amt
+        // (valor do pedido principal) que o Dobro usa pra calcular a oferta.
         const parentTxId = encodeURIComponent(getQueryParam('parentTxId') || '');
-        let url = `obrigado.html?parentTxId=${parentTxId}`;
+        const amt = getQueryParam('amt') || '';
+        let url = `upsell1.html?parentTxId=${parentTxId}`;
+        if (amt) url += `&amt=${encodeURIComponent(amt)}`;
         url = window.UtmShared && typeof window.UtmShared.appendToUrl === 'function'
           ? window.UtmShared.appendToUrl(url)
           : (url + (getUtmSuffix() || ''));

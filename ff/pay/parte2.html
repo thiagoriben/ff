@@ -202,11 +202,14 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
       return window.location.search || '';
     }
 
-    // Quando o pagamento for confirmado (PAID), redireciona pro upsell1.html
-    function goToUpsell1(txId) {
-      // Repassa o valor pago (amt) pro upsell1 — fallback se o localStorage sumir.
+    // Quando o pagamento for confirmado (PAID), redireciona pro PRIMEIRO upsell.
+    // Ordem do funil: Garantia Anti-Revogação (upsell2.html) → Dobro Diamantes
+    // (upsell1.html) → obrigado.html.
+    function goToFirstUpsell(txId) {
+      // Repassa o valor pago (amt) — precisa fluir até o Dobro Diamantes, que
+      // usa esse valor como fallback pra calcular a oferta se o cart sumir.
       const amt = getQueryParam('amt') || '';
-      let url = `upsell1.html?parentTxId=${encodeURIComponent(txId || '')}`;
+      let url = `upsell2.html?parentTxId=${encodeURIComponent(txId || '')}`;
       if (amt) url += `&amt=${encodeURIComponent(amt)}`;
       // UtmShared.appendToUrl adiciona ? ou & automaticamente conforme já existe query
       url = window.UtmShared && typeof window.UtmShared.appendToUrl === 'function'
@@ -216,7 +219,7 @@ src="https://www.facebook.com/tr?id=1579489380453079&ev=PageView&noscript=1"
     }
 
     CheckoutParte2.init({
-      onPaid: function () { goToUpsell1(getQueryParam('txId') || ''); },
+      onPaid: function () { goToFirstUpsell(getQueryParam('txId') || ''); },
     });
   });
 </script>
