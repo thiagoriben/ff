@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "dev": "node -e \"import('http').then(http => http.createServer((req, res) => { const url = new URL(req.url, 'http://localhost:3000'); const path = url.pathname === '/' ? 'ff/index.html' : url.pathname.startsWith('/ff/') ? url.pathname.slice(1) : 'ff' + url.pathname; import('fs').then(fs => { try { const content = fs.readFileSync(path); res.end(content); } catch { res.statusCode = 404; res.end('Not found'); } }); }).listen(3000, () => console.log('✓ Servidor rodando em http://localhost:3000')))\"",
+    "build": "echo 'Static site - no build needed'"
+  },
   "dependencies": {
     "@vercel/functions": "^1.5.0"
   }
