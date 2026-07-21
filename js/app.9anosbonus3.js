@@ -459,8 +459,51 @@ const steps = [
           dynamic.innerHTML = `<div class="social-loading-panel"><div class="social-load-bar"><span id="socialLoadFill"></span><strong id="socialLoadPercent">0%</strong></div><p>Conferindo respostas...</p><p>Verificando e enviando ao servidor. Aguarde ser redirecionado.</p></div><div class="proof-board"><div class="testimony-card authority"><div class="testimony-head"><img src="assets/json-images/reclame-aqui.avif" alt="" class="testimony-avatar" loading="lazy" decoding="async"><div><span>RECLAME AQUI</span><em>Melhores empresas no Reclame AQUI</em></div></div><p>A empresa atingiu a reputação máxima no Reclame AQUI. Sua nota média nos últimos 6 meses é <strong>9.0/10. Reputação RA1000</strong></p><small>★★★★★</small></div><div class="testimony-card"><div class="testimony-head"><img src="assets/json-images/ana-p.avif" alt="" class="testimony-avatar" loading="lazy" decoding="async"><div><span>Ana P.</span><em>São Paulo, SP</em></div></div><p>Fiz o quiz e consegui <strong>5.200 diamantes com 90% de desconto!</strong> Super fácil e rápido!</p><small>★★★★★</small></div><div class="testimony-card"><div class="testimony-head"><img src="assets/json-images/lucas-m.avif" alt="" class="testimony-avatar" loading="lazy" decoding="async"><div><span>Lucas M.</span><em>Rio de Janeiro, RJ</em></div></div><p>Achei que era fake, mas realmente funciona! Peguei meus <strong>5.200 + 1.120 diamantes bônus</strong> em minutos!</p><small>★★★★★</small></div><div class="testimony-card"><div class="testimony-head"><img src="assets/json-images/gustavo-r.avif" alt="" class="testimony-avatar" loading="lazy" decoding="async"><div><span>Gustavo R.</span><em>Belo Horizonte, MG</em></div></div><p>Não acreditei no começo, mas fiz o quiz e realmente consegui os <strong>5.200 diamantes com desconto.</strong></p><small>★★★★★</small></div><div class="testimony-card"><div class="testimony-head"><img src="assets/json-images/rafael-d.avif" alt="" class="testimony-avatar" loading="lazy" decoding="async"><div><span>Rafael D.</span><em>Curitiba, PR</em></div></div><p>Funcionou direitinho! Agora sempre que precisar de diamantes, já sei onde ir. <strong>Recomendo demais!</strong></p><small>★★★★★</small></div><div class="testimony-card"><div class="testimony-head"><img src="assets/json-images/mariana-f.avif" alt="" class="testimony-avatar" loading="lazy" decoding="async"><div><span>Mariana F.</span><em>Fortaleza, CE</em></div></div><p>Já gastei muito dinheiro em diamantes antes, mas esse quiz foi um achado! Peguei <strong>5.200 + 1.120 de bônus</strong> e paguei quase nada!</p><small>★★★★★</small></div><div class="testimony-card"><div class="testimony-head"><img src="assets/json-images/daniel-g.avif" alt="" class="testimony-avatar" loading="lazy" decoding="async"><div><span>Daniel G.</span><em>Salvador, BA</em></div></div><p>Processo super rápido! Fiz o quiz e em minutos já tinha meu código para resgatar os diamantes. <strong>Vale muito a pena!</strong></p><small>★★★★★</small></div></div>`;
           startSocialLoading();
         } else if (step.kind === "redeem") {
-          dynamic.innerHTML = `<div class="redeem-panel"><img src="assets/booyah-icon.png" alt="Booyah" class="redeem-booyah" loading="lazy" decoding="async"><h1 class="redeem-title">CUPOM 90% DESBLOQUEADO</h1><div class="redeem-prize"><div class="redeem-art-wrap"><img src="assets/json-images/diamantes-cupom.jpg" alt="" class="redeem-art" loading="lazy" decoding="async"></div></div><p class="redeem-status">Você concluiu o desafio de aniversário.</p><p class="redeem-copy">Como recompensa, aqui está seu <strong>cupom exclusivo</strong> para comprar diamantes e garantir os melhores itens do evento de aniversário de 9 anos Free Fire.</p><button class="primary-action" type="button">${step.button}</button><p class="redeem-note">Toque no botão para ativar seu resgate</p></div>`;
-          dynamic.querySelector("button").addEventListener("click", () => {
+          const UNLOCK_SECONDS = 30;
+          dynamic.innerHTML = `<div class="redeem-panel"><img src="assets/booyah-icon.png" alt="Booyah" class="redeem-booyah" loading="lazy" decoding="async"><h1 class="redeem-title">CUPOM 90% DESBLOQUEADO</h1><div class="redeem-prize"><div class="redeem-art-wrap"><video id="redeemVideo" class="redeem-video" src="ff/videos/vslff.mp4" playsinline preload="auto" controls></video></div></div><p class="redeem-status">Você concluiu o desafio de aniversário.</p><p class="redeem-copy">Assista ao vídeo abaixo para liberar seu <strong>cupom exclusivo</strong> e garantir os melhores itens do evento de aniversário de 9 anos Free Fire.</p><button class="primary-action redeem-locked" type="button" disabled><span class="redeem-btn-label">${step.button}</span></button><p class="redeem-note" id="redeemNote">Assista ao vídeo para liberar o resgate</p></div>`;
+
+          const redeemBtn = dynamic.querySelector("button");
+          const redeemNote = dynamic.querySelector("#redeemNote");
+          const redeemVideo = dynamic.querySelector("#redeemVideo");
+          const btnLabel = dynamic.querySelector(".redeem-btn-label");
+          const originalLabel = step.button;
+          let unlockTimer = null;
+          let countdownInterval = null;
+          let unlocked = false;
+
+          function unlockRedeem() {
+            if (unlocked) return;
+            unlocked = true;
+            if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+            redeemBtn.disabled = false;
+            redeemBtn.classList.remove("redeem-locked");
+            if (btnLabel) btnLabel.textContent = originalLabel;
+            if (redeemNote) redeemNote.textContent = "Toque no botão para ativar seu resgate";
+          }
+
+          function startUnlockCountdown() {
+            // Só arma uma vez (no primeiro play) — pausar/retomar não reinicia.
+            if (unlockTimer || unlocked) return;
+            let remaining = UNLOCK_SECONDS;
+            if (btnLabel) btnLabel.textContent = `Aguarde ${remaining}s...`;
+            if (redeemNote) redeemNote.textContent = "Continue assistindo para liberar seu cupom";
+            countdownInterval = setInterval(() => {
+              remaining -= 1;
+              if (remaining <= 0) {
+                unlockRedeem();
+                return;
+              }
+              if (btnLabel) btnLabel.textContent = `Aguarde ${remaining}s...`;
+            }, 1000);
+            unlockTimer = setTimeout(unlockRedeem, UNLOCK_SECONDS * 1000);
+          }
+
+          if (redeemVideo) {
+            redeemVideo.addEventListener("play", startUnlockCountdown, { once: false });
+          }
+
+          redeemBtn.addEventListener("click", () => {
+            if (redeemBtn.disabled) return;
             playSelectSound();
             trackQuizCompletion(stepIndex);
             // Garante brinde + desconto final gravados pra loja ler.

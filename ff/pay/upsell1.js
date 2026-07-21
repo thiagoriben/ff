@@ -293,6 +293,13 @@
     const oldEl = document.getElementById('price-old');
     if (oldEl) oldEl.textContent = fmt(totalCents);
 
+    // Corrige a copy da oferta pro desconto do stage 2 (70% OFF), senão o texto
+    // ficava dizendo "50% OFF — pela METADE DO VALOR" com o preço já em 70%.
+    const pctEl = document.getElementById('up1-discount-pct');
+    if (pctEl) pctEl.textContent = '70% OFF';
+    const labelEl = document.getElementById('up1-discount-label');
+    if (labelEl) labelEl.textContent = 'FRAÇÃO DO VALOR';
+
     // Atualiza dataCtx com o novo valor do upsell (stage 2) e re-dispara ViewContent
     // com value correto, senão o pixel do Facebook vê ViewContent=R$ stage1 + Purchase=R$ stage2.
     if (dataCtx) dataCtx.offerCents = newOffer;
