@@ -910,26 +910,89 @@
         btn.style.display = '';
         requestAnimationFrame(() => { btn.style.opacity = '1'; });
       }, 7000);
-      btn.addEventListener('click', () => {
-        // "Já paguei" = avança DIRETO pro upsell1, sem gate de status.
-        // O gate antigo (fetch /status) travava/voltava pro checkout quando a Duttyfy
-        // ainda não tinha confirmado — sintoma reportado. O Purchase real continua vindo
-        // do polling automático (PAID) e do CAPI server-side (webhook/LowTrack).
-        btn.disabled = true;
-        try { stopPolling(); } catch {}
-        const pill = document.getElementById('status-pill');
-        if (pill) pill.innerHTML = '<span class="dot"></span> Redirecionando...';
-        // Manda o snapshot pro backend confirmar na Duttyfy e disparar o approved COM UTMs.
-        // keepalive garante que o POST completa mesmo navegando pro upsell1.
-        try { postConfirm(txId, pollingState && pollingState.valueCents, pollingState && pollingState.items); } catch {}
-        if (typeof onPaid === 'function') {
-          try { onPaid(txId); return; } catch (e) { console.error('já paguei onPaid erro:', e); }
+
+      const originalInnerHTML = btn.innerHTML;
+
+      // Elemento de feedback abaixo do botão (mensagem de "ainda não identificado").
+      function getFeedbackEl() {
+        let el = document.getElementById('refresh-feedback');
+        if (!el) {
+          el = document.createElement('p');
+          el.id = 'refresh-feedback';
+          el.setAttribute('role', 'status');
+          el.setAttribute('aria-live', 'polite');
+          el.style.cssText = 'display:none;text-align:center;margin:10px auto 0;max-width:340px;font-size:0.86rem;line-height:1.45;padding:10px 14px;border-radius:10px;';
+          btn.insertAdjacentElement('afterend', el);
         }
-        // Sem onPaid (não deveria acontecer no parte2): reabilita o botão.
-        setTimeout(() => {
-          btn.disabled = false;
-          btn.textContent = 'Já paguei';
-        }, 2500);
+        return el;
+      }
+      function showFeedback(message, kind) {
+        const el = getFeedbackEl();
+        if (kind === 'error') {
+          el.style.background = 'rgba(255,86,86,0.12)';
+          el.style.border = '1px solid rgba(255,86,86,0.45)';
+          el.style.color = '#ffb4b4';
+        } else {
+          el.style.background = 'rgba(255,193,7,0.12)';
+          el.style.border = '1px solid rgba(255,193,7,0.45)';
+          el.style.color = 'var(--gold, #ffd24d)';
+        }
+        el.innerHTML = message;
+        el.style.display = 'block';
+      }
+      function hideFeedback() {
+        const el = document.getElementById('refresh-feedback');
+        if (el) el.style.display = 'none';
+      }
+
+      btn.addEventListener('click', async () => {
+        // "Já paguei" agora CONSULTA o status real antes de avançar:
+        // - PAID  -> confirma na Duttyfy (approved c/ UTMs) e vai pro próximo passo.
+        // - !PAID -> NÃO redireciona; avisa o usuário e mantém o polling automático
+        //            rodando (que redireciona sozinho assim que o pagamento cair).
+        if (btn.disabled) return;
+        btn.disabled = true;
+        hideFeedback();
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando pagamento...';
+        const pill = document.getElementById('status-pill');
+
+        let status = 'PENDING';
+        try {
+          const resp = await fetch(`/api/pix/status/${encodeURIComponent(txId)}`, {
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+          });
+          const data = await resp.json();
+          status = String(data && data.status || 'PENDING').toUpperCase();
+        } catch {
+          // Falha de rede: trata como não confirmado, sem travar o usuário.
+          status = 'ERROR';
+        }
+
+        if (status === 'PAID') {
+          try { stopPolling(); } catch {}
+          if (pill) {
+            pill.classList.add('paid');
+            pill.innerHTML = '<span class="dot"></span> Pagamento confirmado!';
+          }
+          // Confirma no backend (approved COM UTMs) — keepalive sobrevive à navegação.
+          try { postConfirm(txId, pollingState && pollingState.valueCents, pollingState && pollingState.items); } catch {}
+          if (typeof onPaid === 'function') {
+            try { onPaid(txId); return; } catch (e) { console.error('já paguei onPaid erro:', e); }
+          }
+          // Sem onPaid: mostra overlay de sucesso padrão.
+          showSuccess();
+          return;
+        }
+
+        // Não pago ainda (ou erro de consulta): NÃO redireciona.
+        btn.disabled = false;
+        btn.innerHTML = originalInnerHTML;
+        if (status === 'ERROR') {
+          showFeedback('<i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i>Não conseguimos verificar agora. Tente novamente em instantes.', 'error');
+        } else {
+          showFeedback('<i class="fa-solid fa-clock" style="margin-right:6px;"></i><strong>Pagamento ainda não identificado.</strong><br>Se você acabou de pagar, aguarde alguns segundos — assim que for confirmado, você será redirecionado automaticamente.', 'info');
+        }
       });
     },
 

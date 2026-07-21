@@ -1296,3 +1296,32 @@ body {
   .trust-badges { grid-template-columns: repeat(2, 1fr); }
   .cart-total strong { font-size: 1.3rem; }
 }
+
+/* Aviso em destaque: "volte ao site após pagar pra confirmar os diamantes" */
+.return-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 520px;
+  margin: 16px auto 4px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--orange-soft);
+  border: 1px solid var(--orange);
+  box-shadow: 0 4px 14px rgba(255, 122, 0, 0.14);
+}
+
+.return-notice__icon {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  font-size: 1.1rem;
+  color: var(--orange-deep);
+}
+
+.return-notice__text {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.return-notice__text strong { color: var(--orange-deep); }
